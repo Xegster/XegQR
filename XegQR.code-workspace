@@ -1,0 +1,21 @@
+{
+  "folders": [
+    {
+      "name": "XegQR",
+      "path": "."
+    }
+  ],
+  "settings": {
+    "files.exclude": {
+      "**/.git": true,
+      "**/.DS_Store": true
+    },
+    "search.exclude": {
+      "**/node_modules": true,
+      "**/android": true,
+      "**/ios": true,
+      "**/.expo": true
+    },
+    "files.eol": "\n"
+  }
+}
