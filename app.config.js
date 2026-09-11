@@ -52,12 +52,18 @@ module.exports = {
     runtimeVersion: {
       policy: "appVersion",
     },
+    updates: {
+      url: "https://u.expo.dev/e0a13e09-1c6f-4963-a2f9-2e96fd4c5938",
+    },
     experiments: {
       typedRoutes: false,
     },
     extra: {
       appVersion: "0.1.0",
       router: {},
+      eas: {
+        projectId: "e0a13e09-1c6f-4963-a2f9-2e96fd4c5938",
+      },
     },
     owner: "xegster",
   },

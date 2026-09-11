@@ -1,5 +1,6 @@
 import { create } from 'zustand';
 import * as savedCodes from '../db/repositories/savedCodeRepository';
+import * as templates from '../db/repositories/templateRepository';
 import * as imageCache from '../services/imageCache';
 import { initStorage } from '../db/store';
 
@@ -13,6 +14,7 @@ import { initStorage } from '../db/store';
 
 const useLibraryStore = create((set, get) => ({
   codes: [],
+  templates: [],
   images: [],
   usage: { count: 0, bytes: 0 },
   loading: false,
@@ -23,12 +25,13 @@ const useLibraryStore = create((set, get) => ({
     set({ loading: true, error: null });
     try {
       await initStorage();
-      const [codes, images, usage] = await Promise.all([
+      const [codes, templateList, images, usage] = await Promise.all([
         savedCodes.list(),
+        templates.list(),
         imageCache.listCachedImages(),
         imageCache.cacheUsage(),
       ]);
-      set({ codes, images, usage, loading: false, ready: true });
+      set({ codes, templates: templateList, images, usage, loading: false, ready: true });
     } catch (e) {
       // Storage being unavailable (a locked-down browser, private mode) must
       // not block generating codes — only saving them.
@@ -60,6 +63,17 @@ const useLibraryStore = create((set, get) => ({
   deleteCode: async (id) => {
     await savedCodes.remove(id);
     set({ codes: get().codes.filter((c) => c.id !== id) });
+  },
+
+  saveTemplate: async ({ name, type, style }) => {
+    const record = await templates.create({ name, type, style });
+    set({ templates: [record, ...get().templates] });
+    return record;
+  },
+
+  deleteTemplate: async (id) => {
+    await templates.remove(id);
+    set({ templates: get().templates.filter((t) => t.id !== id) });
   },
 
   cacheImage: async (asset, options) => {

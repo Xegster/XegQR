@@ -32,6 +32,7 @@ export default function SavedScreen() {
   const error = useLibraryStore((s) => s.error);
   const deleteCode = useLibraryStore((s) => s.deleteCode);
   const duplicateCode = useLibraryStore((s) => s.duplicateCode);
+  const saveTemplate = useLibraryStore((s) => s.saveTemplate);
 
   const wide = width >= 760;
 
@@ -133,6 +134,13 @@ export default function SavedScreen() {
                       icon="copy"
                       label="Duplicate"
                       onPress={() => duplicateCode(code.id)}
+                    />
+                    <SmallAction
+                      icon="bookmark"
+                      label="Save as template"
+                      onPress={() =>
+                        saveTemplate({ name: `${code.name} style`, type: code.type, style: code.style })
+                      }
                     />
                     <SmallAction
                       icon="trash"

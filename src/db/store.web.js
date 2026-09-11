@@ -14,9 +14,10 @@
  */
 
 const DB_NAME = 'xegqr';
-const DB_VERSION = 1;
+const DB_VERSION = 2;
 const CODES = 'saved_codes';
 const IMAGES = 'cached_images';
+const TEMPLATES = 'saved_templates';
 
 let dbPromise = null;
 
@@ -38,6 +39,10 @@ function openDb() {
         codes.createIndex('updatedOn', 'updatedOn');
         const images = db.createObjectStore(IMAGES, { keyPath: 'id' });
         images.createIndex('lastUsedOn', 'lastUsedOn');
+      }
+      if (event.oldVersion < 2) {
+        const templates = db.createObjectStore(TEMPLATES, { keyPath: 'id' });
+        templates.createIndex('updatedOn', 'updatedOn');
       }
     };
 
@@ -87,6 +92,30 @@ export async function deleteCode(id) {
   await promisify(tx(db, CODES, 'readwrite').delete(id));
 }
 
+// --- Templates ---------------------------------------------------------
+
+export async function allTemplates() {
+  const db = await openDb();
+  const rows = await promisify(tx(db, TEMPLATES, 'readonly').getAll());
+  return rows.sort((a, b) => (b.updatedOn ?? 0) - (a.updatedOn ?? 0));
+}
+
+export async function getTemplate(id) {
+  const db = await openDb();
+  return (await promisify(tx(db, TEMPLATES, 'readonly').get(id))) ?? null;
+}
+
+export async function putTemplate(template) {
+  const db = await openDb();
+  await promisify(tx(db, TEMPLATES, 'readwrite').put(template));
+  return template;
+}
+
+export async function deleteTemplate(id) {
+  const db = await openDb();
+  await promisify(tx(db, TEMPLATES, 'readwrite').delete(id));
+}
+
 // --- Cached images ---------------------------------------------------------
 
 export async function putImage(image) {
@@ -133,4 +162,5 @@ export async function clearAll() {
   const db = await openDb();
   await promisify(tx(db, CODES, 'readwrite').clear());
   await promisify(tx(db, IMAGES, 'readwrite').clear());
+  await promisify(tx(db, TEMPLATES, 'readwrite').clear());
 }

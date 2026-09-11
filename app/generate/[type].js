@@ -17,6 +17,7 @@ import ScreenHeader from "../../src/components/ScreenHeader";
 import Panel from "../../src/components/Panel";
 import PayloadForm from "../../src/components/PayloadForm";
 import StyleControlsPanel from "../../src/components/StyleControlsPanel";
+import TemplatePanel from "../../src/components/TemplatePanel";
 import QrPreview from "../../src/components/QrPreview";
 import AppButton from "../../src/components/AppButton";
 import ThemedTextInput from "../../src/components/ThemedTextInput";
@@ -60,10 +61,13 @@ export default function GenerateScreen() {
 
   const codes = useLibraryStore((s) => s.codes);
   const images = useLibraryStore((s) => s.images);
+  const templates = useLibraryStore((s) => s.templates);
   const saveCode = useLibraryStore((s) => s.saveCode);
   const updateCode = useLibraryStore((s) => s.updateCode);
   const cacheImage = useLibraryStore((s) => s.cacheImage);
   const deleteImage = useLibraryStore((s) => s.deleteImage);
+  const saveTemplate = useLibraryStore((s) => s.saveTemplate);
+  const deleteTemplate = useLibraryStore((s) => s.deleteTemplate);
 
   const [values, setValues] = useState(() => defaultValuesFor(String(typeId)));
   const [style, setStyle] = useState(() => ({ ...DEFAULT_STYLE, errorCorrectionLevel: defaultEcc }));
@@ -166,6 +170,18 @@ export default function GenerateScreen() {
     }
   };
 
+  const handleSaveTemplate = async (templateName) => {
+    try {
+      await saveTemplate({ name: templateName, type: type.id, style });
+    } catch (e) {
+      alert("Could not save template", e?.message ?? "Something went wrong.");
+    }
+  };
+
+  const handleApplyTemplate = (tmpl) => {
+    setStyle((s) => ({ ...DEFAULT_STYLE, ...tmpl.style }));
+  };
+
   const handleExportPng = async () => {
     setBusy(true);
     const result = await exportPng({
@@ -263,6 +279,13 @@ export default function GenerateScreen() {
           placeholder="Optional — one is chosen for you"
         />
       </Panel>
+
+      <TemplatePanel
+        templates={templates}
+        onSave={handleSaveTemplate}
+        onApply={handleApplyTemplate}
+        onDelete={deleteTemplate}
+      />
 
       <StyleControlsPanel
         style={style}

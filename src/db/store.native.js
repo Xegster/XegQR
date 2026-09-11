@@ -18,7 +18,7 @@ import * as SQLite from 'expo-sqlite';
  */
 
 const DB_NAME = 'xegqr.db';
-const SCHEMA_VERSION = 1;
+const SCHEMA_VERSION = 2;
 
 let dbPromise = null;
 
@@ -52,6 +52,20 @@ async function migrate(db) {
       );
       CREATE INDEX IF NOT EXISTS idx_saved_codes_updated ON saved_codes(updated_on DESC);
       CREATE INDEX IF NOT EXISTS idx_cached_images_used ON cached_images(last_used_on DESC);
+    `);
+  }
+
+  if (current < 2) {
+    await db.execAsync(`
+      CREATE TABLE IF NOT EXISTS saved_templates (
+        id TEXT PRIMARY KEY NOT NULL,
+        name TEXT NOT NULL,
+        type TEXT,
+        style_json TEXT NOT NULL,
+        created_on INTEGER NOT NULL,
+        updated_on INTEGER NOT NULL
+      );
+      CREATE INDEX IF NOT EXISTS idx_saved_templates_updated ON saved_templates(updated_on DESC);
     `);
   }
 
@@ -140,6 +154,58 @@ export async function deleteCode(id) {
   await db.runAsync('DELETE FROM saved_codes WHERE id = ?', [id]);
 }
 
+// --- Templates ---------------------------------------------------------
+
+function rowToTemplate(row) {
+  return {
+    id: row.id,
+    name: row.name,
+    type: row.type,
+    style: safeParse(row.style_json, {}),
+    createdOn: row.created_on,
+    updatedOn: row.updated_on,
+  };
+}
+
+export async function allTemplates() {
+  const db = await getDb();
+  const rows = await db.getAllAsync('SELECT * FROM saved_templates ORDER BY updated_on DESC');
+  return rows.map(rowToTemplate);
+}
+
+export async function getTemplate(id) {
+  const db = await getDb();
+  const row = await db.getFirstAsync('SELECT * FROM saved_templates WHERE id = ?', [id]);
+  return row ? rowToTemplate(row) : null;
+}
+
+export async function putTemplate(template) {
+  const db = await getDb();
+  await db.runAsync(
+    `INSERT INTO saved_templates (id, name, type, style_json, created_on, updated_on)
+     VALUES (?, ?, ?, ?, ?, ?)
+     ON CONFLICT(id) DO UPDATE SET
+       name = excluded.name,
+       type = excluded.type,
+       style_json = excluded.style_json,
+       updated_on = excluded.updated_on`,
+    [
+      template.id,
+      template.name,
+      template.type ?? null,
+      JSON.stringify(template.style ?? {}),
+      template.createdOn,
+      template.updatedOn,
+    ]
+  );
+  return template;
+}
+
+export async function deleteTemplate(id) {
+  const db = await getDb();
+  await db.runAsync('DELETE FROM saved_templates WHERE id = ?', [id]);
+}
+
 // --- Cached images ---------------------------------------------------------
 
 function rowToImage(row, withData) {
@@ -217,5 +283,5 @@ export async function totalImageBytes() {
 
 export async function clearAll() {
   const db = await getDb();
-  await db.execAsync('DELETE FROM saved_codes; DELETE FROM cached_images;');
+  await db.execAsync('DELETE FROM saved_codes; DELETE FROM cached_images; DELETE FROM saved_templates;');
 }

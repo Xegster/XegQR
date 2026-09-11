@@ -75,6 +75,12 @@ produces a code that silently joins the wrong network — covered by tests.
 element. Wrapping the code in React Native views would look identical on screen
 and then silently drop the frame from every export.
 
+**Templates:** the whole bundle above — colours, gradient, shapes, eyes, logo,
+frame, error correction, size — can be saved as a named template from the
+generator or from any saved code, and applied to any code type afterwards.
+A template never carries a code's content (URL, text, WiFi password, etc.), so
+applying one restyles what's already typed without touching it.
+
 ## 3. Export and sharing
 
 | Feature | Native | Web |
@@ -97,6 +103,7 @@ plainly instead of showing a camera that never fires.
 | Feature | Native | Web |
 |---|---|---|
 | Saved codes | `expo-sqlite` | IndexedDB |
+| Saved templates (style only, no content) | `expo-sqlite` | IndexedDB |
 | Cached logo images | `expo-sqlite` (data URIs) | IndexedDB |
 | Settings | AsyncStorage | AsyncStorage (localStorage) |
 
