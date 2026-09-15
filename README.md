@@ -51,6 +51,27 @@ npx expo export -p web
 Output lands in `dist/` as a static bundle — deployable to Firebase Hosting
 first, and portable to Netlify later with no code changes.
 
+## Android preview distribution (EAS)
+
+```bash
+npx eas-cli build --platform android --profile preview
+```
+
+Builds an installable preview APK and prints a download link + QR code when
+done — scan it on the phone to install.
+
+```bash
+npx eas-cli update --channel preview --message "My update message!"
+```
+
+Publishes an OTA update to the `preview` channel without a full rebuild —
+force-close and reopen the app on the phone to pick it up. Pushing to
+`develop` does this automatically via `.github/workflows/eas-update.yml`.
+
+> OTA updates only apply when `expo.appVersion` matches the version baked
+> into the installed APK. If you bump the app version, rebuild and reinstall
+> the preview APK before OTA updates will work again.
+
 ## Layout
 
 ```

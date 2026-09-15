@@ -157,8 +157,12 @@ function nativeToDataUrl(svgRef) {
       resolve(null);
       return;
     }
-    // react-native-svg hands back bare base64, no data: prefix.
-    node.toDataURL((base64) => resolve(base64), { quality: 1 });
+    // react-native-svg hands back bare base64, no data: prefix. Its native
+    // toDataURL only understands { width, height } in the options object —
+    // any other shape (e.g. a `quality` key) makes the Android side crash
+    // the app outright (it does an unchecked options.getInt("width")), so
+    // omit options entirely and let it use the SVG's own bounding box.
+    node.toDataURL((base64) => resolve(base64));
   });
 }
 

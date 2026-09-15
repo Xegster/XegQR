@@ -1,6 +1,7 @@
 import React from "react";
 import { View, Text, ScrollView, StyleSheet } from "react-native";
 import { useRouter } from "expo-router";
+import Constants from "expo-constants";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { useTheme } from "../src/theme/ThemeProvider";
 import useSettingsStore from "../src/stores/useSettingsStore";
@@ -15,6 +16,8 @@ import { formatBytes } from "../src/services/imageCache";
 import { confirm } from "../src/utils/crossPlatformAlert";
 
 const MB = 1024 * 1024;
+const appVersion = Constants.expoConfig?.extra?.appVersion ?? Constants.expoConfig?.version;
+const expoVersion = Constants.expoConfig?.version;
 
 export default function SettingsScreen() {
   const router = useRouter();
@@ -134,6 +137,9 @@ export default function SettingsScreen() {
           <Text style={[styles.body, { color: tokens.textMuted }]}>
             Saved codes and images live in this app's local storage. Uninstalling the app, or
             clearing the site data in your browser, removes them for good.
+          </Text>
+          <Text style={[styles.body, { color: tokens.textMuted }]}>
+            App version {appVersion} · Expo {expoVersion}
           </Text>
         </Panel>
       </ScrollView>
