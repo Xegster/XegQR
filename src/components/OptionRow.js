@@ -1,6 +1,14 @@
-import React from "react";
+import React, { useCallback, useEffect, useRef } from "react";
 import { View, Text, Pressable, Switch, ScrollView, StyleSheet } from "react-native";
 import { useTheme } from "../theme/ThemeProvider";
+
+// Hold-to-repeat tuning for StepperRow's +/- buttons: wait long enough to
+// tell a hold from a tap, repeat slowly at first, then speed up once the
+// user has clearly committed to holding it down.
+const STEPPER_HOLD_DELAY_MS = 400;
+const STEPPER_SLOW_INTERVAL_MS = 300;
+const STEPPER_FAST_INTERVAL_MS = 60;
+const STEPPER_FAST_AFTER_MS = 2000;
 
 /**
  * The small labelled control primitives shared by the generator and settings
@@ -99,13 +107,79 @@ export function StepperRow({
   const clamp = (n) => Math.min(max, Math.max(min, Number(n.toFixed(4))));
   const display = format ? format(value) : String(value);
 
+  const valueRef = useRef(value);
+  useEffect(() => {
+    valueRef.current = value;
+  }, [value]);
+
+  const holdTimerRef = useRef(null);
+  const holdStartRef = useRef(null);
+  const holdEngagedRef = useRef(false);
+
+  const stopHold = useCallback(() => {
+    if (holdTimerRef.current != null) {
+      clearTimeout(holdTimerRef.current);
+      holdTimerRef.current = null;
+    }
+    holdStartRef.current = null;
+  }, []);
+
+  useEffect(() => stopHold, [stopHold]);
+
+  const stepOnce = useCallback(
+    (dir) => {
+      const next = clamp(valueRef.current + (dir === "dec" ? -step : step));
+      if (next === valueRef.current) return false;
+      valueRef.current = next;
+      onChange(next);
+      return true;
+    },
+    [clamp, onChange, step]
+  );
+
+  const startHold = useCallback(
+    (dir) => {
+      stopHold();
+      holdStartRef.current = Date.now();
+      const tick = () => {
+        holdEngagedRef.current = true;
+        const changed = stepOnce(dir);
+        if (!changed) {
+          stopHold();
+          return;
+        }
+        const held = Date.now() - holdStartRef.current;
+        const interval = held > STEPPER_FAST_AFTER_MS ? STEPPER_FAST_INTERVAL_MS : STEPPER_SLOW_INTERVAL_MS;
+        holdTimerRef.current = setTimeout(tick, interval);
+      };
+      holdTimerRef.current = setTimeout(tick, STEPPER_HOLD_DELAY_MS);
+    },
+    [stepOnce, stopHold]
+  );
+
+  // A hold that repeated at least once already applied its steps via the
+  // timer above; the onPress fired by releasing must then be a no-op so the
+  // release doesn't apply one extra step on top of the hold.
+  const handlePress = useCallback(
+    (dir) => {
+      if (holdEngagedRef.current) {
+        holdEngagedRef.current = false;
+        return;
+      }
+      stepOnce(dir);
+    },
+    [stepOnce]
+  );
+
   const btn = (dir, symbol, disabled) => (
     <Pressable
       testID={`${testID}-${dir}`}
       accessibilityRole="button"
       accessibilityLabel={`${dir === "dec" ? "Decrease" : "Increase"} ${label}`}
       disabled={disabled}
-      onPress={() => onChange(clamp(value + (dir === "dec" ? -step : step)))}
+      onPress={() => handlePress(dir)}
+      onPressIn={() => startHold(dir)}
+      onPressOut={stopHold}
       style={({ pressed }) => [
         styles.stepBtn,
         {

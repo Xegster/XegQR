@@ -48,8 +48,36 @@ npm test
 npx expo export -p web
 ```
 
-Output lands in `dist/` as a static bundle — deployable to Firebase Hosting
-first, and portable to Netlify later with no code changes.
+Output lands in `dist/` as a static bundle.
+
+## Web hosting (EAS)
+
+One-time setup, interactively, from a machine logged into the project's Expo
+account:
+
+```bash
+npx eas-cli deploy
+```
+
+The first run asks you to link the project to EAS Hosting and pick a
+subdomain (e.g. `xegqr`) — after that, deploys are non-interactive.
+
+```bash
+npx eas-cli deploy --alias preview
+```
+
+Deploys the current `dist/` build to `preview--<subdomain>.expo.app` without
+touching production. Pushing to `develop` does this automatically via
+`.github/workflows/eas-hosting-deploy.yml`, reusing the same `EXPO_TOKEN`
+secret as the Android OTA workflow.
+
+```bash
+npx eas-cli deploy --prod
+```
+
+Promotes a build to the production URL, `<subdomain>.expo.app`. Run
+`npx expo export -p web` first — `eas deploy` uploads whatever is already in
+`dist/`, it does not build it for you.
 
 ## Android preview distribution (EAS)
 

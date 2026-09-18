@@ -246,6 +246,7 @@ export default function GenerateScreen() {
             variant="outline"
             onPress={handleExportSvg}
             disabled={!hasContent || busy}
+            icon={<Icon name="download" size={16} color={tokens.PrimaryColor} />}
             style={styles.action}
           />
         ) : null}
