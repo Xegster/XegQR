@@ -87,7 +87,7 @@ applying one restyles what's already typed without touching it.
 |---|---|---|
 | PNG | `react-native-svg`'s `toDataURL` → `expo-file-system` → `expo-sharing` | `XMLSerializer` → canvas raster → download |
 | SVG | Not available — the native renderer cannot return its markup | `XMLSerializer` → download |
-| Copy payload | `expo-clipboard` | `expo-clipboard` |
+| Copy image | `toDataURL` → base64 → `expo-clipboard`'s `setImageAsync` | `XMLSerializer` → canvas raster → base64 → `expo-clipboard`'s `setImageAsync` |
 
 Exports render at 3× the on-screen size.
 

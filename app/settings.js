@@ -138,9 +138,23 @@ export default function SettingsScreen() {
             Saved codes and images live in this app's local storage. Uninstalling the app, or
             clearing the site data in your browser, removes them for good.
           </Text>
-          <Text style={[styles.body, { color: tokens.textMuted }]}>
-            App version {appVersion} · Expo {expoVersion}
-          </Text>
+        </Panel>
+
+        <Panel title="Version" icon={<Icon name="settings" size={18} color={tokens.PrimaryColor} />}>
+          <View style={styles.aboutRow}>
+            <Text style={[styles.aboutLabel, { color: tokens.textMuted }]}>Developed By</Text>
+            <Text style={[styles.aboutValue, { color: tokens.text }]}>Xegster</Text>
+          </View>
+          <View style={[styles.divider, { backgroundColor: tokens.border }]} />
+          <View style={styles.aboutRow}>
+            <Text style={[styles.aboutLabel, { color: tokens.textMuted }]}>App Version</Text>
+            <Text style={[styles.aboutValue, { color: tokens.text }]}>{appVersion ?? "—"}</Text>
+          </View>
+          <View style={[styles.divider, { backgroundColor: tokens.border }]} />
+          <View style={styles.aboutRow}>
+            <Text style={[styles.aboutLabel, { color: tokens.textMuted }]}>EAS Build</Text>
+            <Text style={[styles.aboutValue, { color: tokens.text }]}>{expoVersion ?? "—"}</Text>
+          </View>
         </Panel>
       </ScrollView>
     </View>
@@ -151,4 +165,8 @@ const styles = StyleSheet.create({
   screen: { flex: 1 },
   scroll: { padding: 16, gap: 12, alignSelf: "center", width: "100%", maxWidth: 720 },
   body: { fontSize: 13, lineHeight: 19 },
+  aboutRow: { flexDirection: "row", alignItems: "center", justifyContent: "space-between", paddingVertical: 2 },
+  aboutLabel: { fontSize: 14, fontWeight: "500" },
+  aboutValue: { fontSize: 14, fontWeight: "600" },
+  divider: { height: 1, marginHorizontal: -4 },
 });

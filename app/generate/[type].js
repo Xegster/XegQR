@@ -25,7 +25,7 @@ import Icon from "../../src/components/icons/QrIcons";
 import { getQrType, defaultValuesFor, buildPayload, missingRequiredFields } from "../../src/utils/qrPayloads";
 import { DEFAULT_STYLE } from "../../src/utils/qrStyleOptions";
 import { pickImage } from "../../src/services/imageCache";
-import { exportPng, exportSvg, copyToClipboard, canExportSvg } from "../../src/services/qrExport";
+import { exportPng, exportSvg, copyImage, canExportSvg } from "../../src/services/qrExport";
 import { alert } from "../../src/utils/crossPlatformAlert";
 
 const PREVIEW_DOM_ID = "xegqr-preview";
@@ -199,8 +199,10 @@ export default function GenerateScreen() {
   };
 
   const handleCopy = async () => {
-    const result = await copyToClipboard(payload);
-    alert(result.ok ? "Copied" : "Could not copy", result.ok ? "The code's content is on your clipboard." : result.error);
+    setBusy(true);
+    const result = await copyImage({ svgRef, domId: PREVIEW_DOM_ID });
+    setBusy(false);
+    alert(result.ok ? "Copied" : "Could not copy", result.ok ? "The QR code image is on your clipboard." : result.error);
   };
 
   const preview = (
@@ -254,7 +256,7 @@ export default function GenerateScreen() {
           label="Copy"
           variant="ghost"
           onPress={handleCopy}
-          disabled={!hasContent}
+          disabled={!hasContent || busy}
           icon={<Icon name="copy" size={16} color={tokens.text} />}
           style={styles.action}
         />

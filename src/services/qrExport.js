@@ -174,3 +174,30 @@ export async function copyToClipboard(text) {
     return { ok: false, error: e?.message ?? 'Could not copy.' };
   }
 }
+
+/** Copy the rendered code to the clipboard as an image. Returns `{ ok, error }`. */
+export async function copyImage({ svgRef, domId, scale = 3 }) {
+  try {
+    let base64;
+
+    if (Platform.OS === 'web') {
+      const node = findSvgNode(domId);
+      if (!node) return { ok: false, error: 'Could not find the code to copy.' };
+
+      const box = node.viewBox?.baseVal;
+      const width = box?.width || node.width?.baseVal?.value || 512;
+      const height = box?.height || node.height?.baseVal?.value || 512;
+
+      const dataUrl = await rasterizeSvg(serializeSvg(node), width, height, scale);
+      base64 = dataUrl.split(',')[1];
+    } else {
+      base64 = await nativeToDataUrl(svgRef);
+      if (!base64) return { ok: false, error: 'Could not render the code to an image.' };
+    }
+
+    await Clipboard.setImageAsync(base64);
+    return { ok: true, error: null };
+  } catch (e) {
+    return { ok: false, error: e?.message ?? 'Could not copy.' };
+  }
+}
