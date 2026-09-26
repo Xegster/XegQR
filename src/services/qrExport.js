@@ -8,14 +8,18 @@ import * as Clipboard from 'expo-clipboard';
  * file paths:
  *
  *  native — react-native-svg's element exposes `toDataURL`, which rasterises
- *           the SVG natively. The result is written to the cache directory and
- *           handed to the share sheet, because expo-sharing needs a file URI.
+ *           the SVG natively. The result is written to the cache directory,
+ *           then either saved straight to the device's gallery via
+ *           expo-media-library ("Save"), or handed to the share sheet via
+ *           expo-sharing ("Share") — two distinct actions, since Android's
+ *           share sheet does not reliably offer "save to gallery" itself.
  *
  *  web    — that method does not exist on the web build, so the <svg> node is
  *           serialised, rasterised through a canvas at a chosen scale, and
  *           saved with a download link. The node is found by DOM id rather than
  *           through the ref, since react-native-svg's web ref does not reliably
- *           expose the underlying element.
+ *           expose the underlying element. A browser download already is the
+ *           "save locally" action, so there is no separate share path.
  *
  * SVG export is web-only for the same reason: there is no way to get the
  * rendered markup back out of the native renderer. Callers should check
@@ -85,10 +89,23 @@ function downloadDataUrl(dataUrl, fileName) {
 
 // --- Public API ------------------------------------------------------------
 
+/** Writes the rendered code to a temp PNG file in the cache dir. Native only. */
+async function writeNativePngToCache(svgRef, fileName) {
+  const base64 = await nativeToDataUrl(svgRef);
+  if (!base64) return null;
+
+  const { File, Paths } = require('expo-file-system');
+  const file = new File(Paths.cache, fileName);
+  if (file.exists) file.delete();
+  file.create();
+  file.write(base64, { encoding: 'base64' });
+  return file;
+}
+
 /**
- * Save the code as a PNG. On web this downloads; on native it opens the share
- * sheet, which is where "save to photos" lives on both mobile platforms.
- * Returns `{ ok, error }`.
+ * Save the code as a PNG. On web this downloads to the browser's default
+ * download location. On native it saves directly to the device's photo
+ * gallery — no share sheet involved. Returns `{ ok, error }`.
  */
 export async function exportPng({ svgRef, domId, name, scale = 3 }) {
   const fileName = `${timestampName(name)}.png`;
@@ -107,28 +124,49 @@ export async function exportPng({ svgRef, domId, name, scale = 3 }) {
       return { ok: true, error: null };
     }
 
-    const base64 = await nativeToDataUrl(svgRef);
-    if (!base64) return { ok: false, error: 'Could not render the code to an image.' };
+    const file = await writeNativePngToCache(svgRef, fileName);
+    if (!file) return { ok: false, error: 'Could not render the code to an image.' };
 
-    const { File, Paths } = require('expo-file-system');
+    const MediaLibrary = require('expo-media-library');
+    const permission = await MediaLibrary.requestPermissionsAsync();
+    if (!permission.granted) {
+      return { ok: false, error: 'Photo library access is needed to save the code.' };
+    }
+    await MediaLibrary.saveToLibraryAsync(file.uri);
+    return { ok: true, error: null };
+  } catch (e) {
+    return { ok: false, error: e?.message ?? 'Export failed.' };
+  }
+}
+
+/**
+ * Share the code as a PNG via the platform share sheet. Native only — on web
+ * a direct download already covers the "get this file" need, so callers
+ * should not offer this action there.
+ */
+export async function sharePng({ svgRef, name, scale = 3 }) {
+  if (Platform.OS === 'web') {
+    return { ok: false, error: 'Sharing is only available on the mobile app.' };
+  }
+
+  const fileName = `${timestampName(name)}.png`;
+
+  try {
+    const file = await writeNativePngToCache(svgRef, fileName);
+    if (!file) return { ok: false, error: 'Could not render the code to an image.' };
+
     const Sharing = require('expo-sharing');
-
-    const file = new File(Paths.cache, fileName);
-    if (file.exists) file.delete();
-    file.create();
-    file.write(base64, { encoding: 'base64' });
-
     if (await Sharing.isAvailableAsync()) {
       await Sharing.shareAsync(file.uri, {
         mimeType: 'image/png',
-        dialogTitle: 'Save or share your QR code',
+        dialogTitle: 'Share your QR code',
         UTI: 'public.png',
       });
       return { ok: true, error: null };
     }
     return { ok: false, error: 'Sharing is not available on this device.' };
   } catch (e) {
-    return { ok: false, error: e?.message ?? 'Export failed.' };
+    return { ok: false, error: e?.message ?? 'Share failed.' };
   }
 }
 

@@ -25,7 +25,7 @@ import Icon from "../../src/components/icons/QrIcons";
 import { getQrType, defaultValuesFor, buildPayload, missingRequiredFields } from "../../src/utils/qrPayloads";
 import { DEFAULT_STYLE } from "../../src/utils/qrStyleOptions";
 import { pickImage } from "../../src/services/imageCache";
-import { exportPng, exportSvg, copyImage, canExportSvg } from "../../src/services/qrExport";
+import { exportPng, exportSvg, sharePng, copyImage, canExportSvg } from "../../src/services/qrExport";
 import { alert } from "../../src/utils/crossPlatformAlert";
 
 const PREVIEW_DOM_ID = "xegqr-preview";
@@ -190,7 +190,14 @@ export default function GenerateScreen() {
       name: name.trim() || type.id,
     });
     setBusy(false);
-    if (!result.ok) alert("Export failed", result.error);
+    if (!result.ok) alert("Save failed", result.error);
+  };
+
+  const handleSharePng = async () => {
+    setBusy(true);
+    const result = await sharePng({ svgRef, name: name.trim() || type.id });
+    setBusy(false);
+    if (!result.ok) alert("Share failed", result.error);
   };
 
   const handleExportSvg = async () => {
@@ -235,13 +242,23 @@ export default function GenerateScreen() {
           style={styles.action}
         />
         <AppButton
-          label="PNG"
+          label="Save"
           variant="secondary"
           onPress={handleExportPng}
           disabled={!hasContent || busy}
           icon={<Icon name="download" size={16} color="#ffffff" />}
           style={styles.action}
         />
+        {!canExportSvg ? (
+          <AppButton
+            label="Share"
+            variant="outline"
+            onPress={handleSharePng}
+            disabled={!hasContent || busy}
+            icon={<Icon name="share" size={16} color={tokens.PrimaryColor} />}
+            style={styles.action}
+          />
+        ) : null}
         {canExportSvg ? (
           <AppButton
             label="SVG"
