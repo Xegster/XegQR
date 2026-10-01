@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { View, Text, TextInput, Pressable, ScrollView, StyleSheet } from "react-native";
+import { View, Text, TextInput, Pressable, StyleSheet } from "react-native";
 import { useTheme } from "../theme/ThemeProvider";
 import { isValidHex, normalizeHex } from "../utils/color";
 
@@ -48,7 +48,7 @@ export default function ColorField({
     <View testID={testID}>
       {label ? <Text style={[styles.label, { color: tokens.textMuted }]}>{label}</Text> : null}
 
-      <ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={styles.row}>
+      <View style={styles.row}>
         {allowInherit ? (
           <Pressable
             accessibilityRole="radio"
@@ -92,7 +92,7 @@ export default function ColorField({
             />
           );
         })}
-      </ScrollView>
+      </View>
 
       <View
         style={[
@@ -126,7 +126,7 @@ export default function ColorField({
 
 const styles = StyleSheet.create({
   label: { fontSize: 12, fontWeight: "600", marginBottom: 8, letterSpacing: 0.2 },
-  row: { flexDirection: "row", gap: 8, paddingRight: 4, alignItems: "center" },
+  row: { flexDirection: "row", flexWrap: "wrap", gap: 8, alignItems: "center" },
   swatch: { width: 30, height: 30, borderRadius: 15 },
   inheritChip: { paddingVertical: 7, paddingHorizontal: 12, borderRadius: 100, borderWidth: 1 },
   inheritLabel: { fontSize: 12, fontWeight: "600" },

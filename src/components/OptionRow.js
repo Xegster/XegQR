@@ -1,5 +1,5 @@
 import React, { useCallback, useEffect, useRef } from "react";
-import { View, Text, Pressable, Switch, ScrollView, StyleSheet } from "react-native";
+import { View, Text, Pressable, Switch, StyleSheet } from "react-native";
 import { useTheme } from "../theme/ThemeProvider";
 
 // Hold-to-repeat tuning for StepperRow's +/- buttons: wait long enough to
@@ -15,7 +15,7 @@ const STEPPER_FAST_AFTER_MS = 2000;
  * screens. Grouped in one file because they are variations on the same
  * "label on the left, control on the right" row and are always used together.
  *
- *   SegmentedControl — horizontal pill picker, scrolls when the options overflow
+ *   SegmentedControl — pill picker, wraps onto extra lines when the options overflow
  *   SwitchRow        — label + native Switch
  *   StepperRow       — numeric value with -/+ (no slider dependency, and it
  *                      behaves identically on web, where RN sliders are shaky)
@@ -27,11 +27,7 @@ export function SegmentedControl({ label, value, options, onChange, hint, testID
   return (
     <View testID={testID}>
       {label ? <Text style={[styles.label, { color: tokens.textMuted }]}>{label}</Text> : null}
-      <ScrollView
-        horizontal
-        showsHorizontalScrollIndicator={false}
-        contentContainerStyle={styles.segRow}
-      >
+      <View style={styles.segRow}>
         {options.map((opt) => {
           const selected = String(opt.value) === String(value);
           return (
@@ -67,7 +63,7 @@ export function SegmentedControl({ label, value, options, onChange, hint, testID
             </Pressable>
           );
         })}
-      </ScrollView>
+      </View>
       {hint ? <Text style={[styles.hint, { color: tokens.textMuted }]}>{hint}</Text> : null}
     </View>
   );
@@ -210,7 +206,7 @@ export function StepperRow({
 
 const styles = StyleSheet.create({
   label: { fontSize: 12, fontWeight: "600", marginBottom: 8, letterSpacing: 0.2 },
-  segRow: { flexDirection: "row", gap: 8, paddingRight: 4 },
+  segRow: { flexDirection: "row", flexWrap: "wrap", gap: 8 },
   segItem: {
     flexDirection: "row",
     alignItems: "center",
