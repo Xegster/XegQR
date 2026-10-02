@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { View, Text, ScrollView, Linking, Platform, StyleSheet } from "react-native";
+import { View, Text, ScrollView, Linking, StyleSheet } from "react-native";
 import { useRouter } from "expo-router";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { CameraView, useCameraPermissions } from "expo-camera";
@@ -10,6 +10,7 @@ import AppButton from "../src/components/AppButton";
 import Icon from "../src/components/icons/QrIcons";
 import { copyToClipboard } from "../src/services/qrExport";
 import { alert } from "../src/utils/crossPlatformAlert";
+import { isWeb } from "../src/utils/platform";
 
 /**
  * Scan — read a code with the camera.
@@ -33,7 +34,7 @@ export default function ScanScreen() {
   const [result, setResult] = useState(null);
 
   const webUnsupported =
-    Platform.OS === "web" && typeof window !== "undefined" && !("BarcodeDetector" in window);
+    isWeb && typeof window !== "undefined" && !("BarcodeDetector" in window);
 
   const handleScanned = ({ data }) => {
     if (result) return;

@@ -4,7 +4,6 @@ import {
   Text,
   ScrollView,
   KeyboardAvoidingView,
-  Platform,
   useWindowDimensions,
   StyleSheet,
 } from "react-native";
@@ -27,16 +26,17 @@ import { DEFAULT_STYLE } from "../../src/utils/qrStyleOptions";
 import { pickImage } from "../../src/services/imageCache";
 import { exportPng, exportSvg, sharePng, copyImage, canExportSvg } from "../../src/services/qrExport";
 import { alert } from "../../src/utils/crossPlatformAlert";
+import { isDesktopWeb, isIos } from "../../src/utils/platform";
 
 const PREVIEW_DOM_ID = "xegqr-preview";
 
 /**
  * Generator — the one screen every QR type shares.
  *
- * Layout switches at 900px: side-by-side with a sticky preview on desktop, a
- * single scrolling column on phones. The preview is the thing people watch
- * while they type, so on desktop it must not scroll away, and on a phone it
- * must not eat half the screen above the keyboard.
+ * Layout switches at 900px: side-by-side on wide screens, a single scrolling
+ * column on phones. The preview is the thing people watch while they type, so
+ * on desktop web it is pinned and must not scroll away; on a phone it must not
+ * eat half the screen above the keyboard, so it scrolls with the page.
  *
  * An existing code can be opened here for editing by passing `?id=`, in which
  * case saving updates that record instead of creating another.
@@ -213,7 +213,7 @@ export default function GenerateScreen() {
   };
 
   const preview = (
-    <Panel style={wideLayout ? styles.stickyPanel : undefined} contentStyle={styles.previewBody}>
+    <Panel style={wideLayout && isDesktopWeb ? styles.pinnedPanel : undefined} contentStyle={styles.previewBody}>
       {/* nativeID becomes the DOM id on web, which is how qrExport finds the
           <svg> node to rasterise. */}
       <View nativeID={PREVIEW_DOM_ID}>
@@ -326,7 +326,7 @@ export default function GenerateScreen() {
   return (
     <KeyboardAvoidingView
       style={[styles.screen, { backgroundColor: tokens.background }]}
-      behavior={Platform.OS === "ios" ? "padding" : undefined}
+      behavior={isIos ? "padding" : undefined}
     >
       <ScreenHeader
         title={type.label}
@@ -358,11 +358,12 @@ const styles = StyleSheet.create({
   scrollWide: { alignSelf: "center", width: "100%", maxWidth: 1180 },
   layout: { gap: 12 },
   layoutWide: { flexDirection: "row-reverse", alignItems: "flex-start", gap: 16 },
-  previewColumn: { width: 380 },
+  // Stretches to the height of the controls so the pinned panel has room to travel.
+  previewColumn: { width: 380, alignSelf: "stretch" },
   controlsColumn: { flex: 1 },
-  stickyPanel: Platform.select({ web: { position: "sticky", top: 16 }, default: {} }),
+  pinnedPanel: { position: "sticky", top: 16 },
   previewBody: { alignItems: "center", gap: 14 },
-  payloadText: { fontSize: 11, textAlign: "center", fontFamily: Platform.select({ ios: "Menlo", android: "monospace", default: "monospace" }) },
+  payloadText: { fontSize: 11, textAlign: "center", fontFamily: isIos ? "Menlo" : "monospace" },
   actions: { flexDirection: "row", flexWrap: "wrap", gap: 8, justifyContent: "center" },
   action: { flexGrow: 1, minWidth: 92 },
 });

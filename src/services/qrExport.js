@@ -1,4 +1,4 @@
-import { Platform } from 'react-native';
+import { isWeb } from '../utils/platform';
 import * as Clipboard from 'expo-clipboard';
 
 /**
@@ -26,7 +26,7 @@ import * as Clipboard from 'expo-clipboard';
  * `canExportSvg` before offering it rather than failing at press time.
  */
 
-export const canExportSvg = Platform.OS === 'web';
+export const canExportSvg = isWeb;
 
 function timestampName(base = 'qr-code') {
   const d = new Date();
@@ -111,7 +111,7 @@ export async function exportPng({ svgRef, domId, name, scale = 3 }) {
   const fileName = `${timestampName(name)}.png`;
 
   try {
-    if (Platform.OS === 'web') {
+    if (isWeb) {
       const node = findSvgNode(domId);
       if (!node) return { ok: false, error: 'Could not find the code to export.' };
 
@@ -145,7 +145,7 @@ export async function exportPng({ svgRef, domId, name, scale = 3 }) {
  * should not offer this action there.
  */
 export async function sharePng({ svgRef, name, scale = 3 }) {
-  if (Platform.OS === 'web') {
+  if (isWeb) {
     return { ok: false, error: 'Sharing is only available on the mobile app.' };
   }
 
@@ -218,7 +218,7 @@ export async function copyImage({ svgRef, domId, scale = 3 }) {
   try {
     let base64;
 
-    if (Platform.OS === 'web') {
+    if (isWeb) {
       const node = findSvgNode(domId);
       if (!node) return { ok: false, error: 'Could not find the code to copy.' };
 

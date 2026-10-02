@@ -1,4 +1,4 @@
-import { Platform } from 'react-native';
+import { isWeb } from './platform';
 
 /**
  * scopeSvgIds — make one rendered QR's SVG <defs> ids unique to that instance.
@@ -18,7 +18,7 @@ import { Platform } from 'react-native';
  * the original id whenever it touches the element.
  */
 export default function scopeSvgIds(hostNode, suffix) {
-  if (Platform.OS !== 'web' || !hostNode || !suffix) return;
+  if (!isWeb || !hostNode || !suffix) return;
 
   const svg = typeof hostNode.querySelector === 'function' ? hostNode.querySelector('svg') : null;
   if (!svg) return;

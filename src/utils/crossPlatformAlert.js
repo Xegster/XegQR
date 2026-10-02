@@ -1,4 +1,5 @@
-import { Alert, Platform } from 'react-native';
+import { Alert } from 'react-native';
+import { isWeb } from './platform';
 
 /**
  * crossPlatformAlert — Alert.alert that also works on the web build.
@@ -10,7 +11,7 @@ import { Alert, Platform } from 'react-native';
  */
 
 export function alert(title, message) {
-  if (Platform.OS === 'web') {
+  if (isWeb) {
     if (typeof window !== 'undefined') window.alert(message ? `${title}\n\n${message}` : title);
     return;
   }
@@ -22,7 +23,7 @@ export function alert(title, message) {
  * `onConfirm` runs only on a yes; `onCancel` is optional.
  */
 export function confirm(title, message, onConfirm, { confirmLabel = 'OK', destructive = false, onCancel } = {}) {
-  if (Platform.OS === 'web') {
+  if (isWeb) {
     const ok = typeof window !== 'undefined' && window.confirm(message ? `${title}\n\n${message}` : title);
     if (ok) onConfirm?.();
     else onCancel?.();
