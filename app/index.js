@@ -1,5 +1,5 @@
 import React, { useMemo } from "react";
-import { View, Text, ScrollView, Pressable, useWindowDimensions, StyleSheet } from "react-native";
+import { View, Text, Image, ScrollView, Pressable, useWindowDimensions, StyleSheet } from "react-native";
 import { useRouter } from "expo-router";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { useTheme } from "../src/theme/ThemeProvider";
@@ -65,7 +65,12 @@ export default function Home() {
     >
       <View style={styles.topRow}>
         <View style={styles.brandRow}>
-          <Icon name="qr" size={26} color={tokens.PrimaryColor} />
+          <Image
+            source={require("../assets/logo.png")}
+            style={styles.logo}
+            accessible={false}
+            accessibilityIgnoresInvertColors
+          />
           <View>
             <Text style={[styles.brand, { color: tokens.text }]}>XegQR</Text>
             <Text style={[styles.tagline, { color: tokens.textMuted }]}>
@@ -171,6 +176,8 @@ const styles = StyleSheet.create({
     gap: 12,
   },
   brandRow: { flexDirection: "row", alignItems: "center", gap: 10, flexShrink: 1 },
+  // Matches the height of the title + tagline stack beside it.
+  logo: { width: 44, height: 44 },
   brand: { fontSize: 24, fontWeight: "800", letterSpacing: -0.5 },
   tagline: { fontSize: 12, marginTop: 1 },
   topActions: { flexDirection: "row", gap: 8 },

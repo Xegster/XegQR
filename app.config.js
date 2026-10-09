@@ -2,7 +2,7 @@ module.exports = {
   expo: {
     name: "XegQR",
     slug: "xegqr",
-    version: "0.1.0",
+    version: "0.1.1",
     orientation: "portrait",
     assetBundlePatterns: ["assets/**/*"],
     icon: "./assets/icon.png",
@@ -67,7 +67,7 @@ module.exports = {
       typedRoutes: false,
     },
     extra: {
-      appVersion: "0.1.6",
+      appVersion: "0.1.7",
       router: {},
       eas: {
         projectId: "e0a13e09-1c6f-4963-a2f9-2e96fd4c5938",
