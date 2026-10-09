@@ -1,6 +1,7 @@
 import * as store from '../store';
 import generateId from '../../utils/generateId';
 import { buildPayload } from '../../utils/qrPayloads';
+import * as widgetSync from '../../services/widgetSync';
 
 /**
  * savedCodeRepository — the only place that knows how a saved code record is
@@ -11,6 +12,9 @@ import { buildPayload } from '../../utils/qrPayloads';
  * The payload alone would be enough to redraw the code, but not to reopen it in
  * the editor with the WiFi password back in its own field — and reopening a
  * saved code to tweak it is the main reason to save one.
+ *
+ * Updates and deletes also notify widgetSync, so a home-screen tile follows a
+ * rename or shows "Code removed" whichever screen or store made the change.
  */
 
 export async function list() {
@@ -48,10 +52,18 @@ export async function update(id, changes) {
     style: changes.style ?? existing.style,
     updatedOn: Date.now(),
   };
+  // No `name` means unchanged; a blank one means "choose one for me", the same
+  // fallback create() uses. Never store an empty name: the SQLite column is
+  // NOT NULL, so an undefined name failed the whole save.
+  merged.name =
+    changes.name === undefined
+      ? existing.name
+      : String(changes.name ?? '').trim() || defaultName(merged.type, merged.values);
   // Keep the payload in step with whatever the values now say.
   merged.payload = buildPayload(merged.type, merged.values);
 
   await store.putCode(merged);
+  notifyWidgets(widgetSync.codeUpdated(merged));
   return merged;
 }
 
@@ -68,6 +80,12 @@ export async function duplicate(id) {
 
 export async function remove(id) {
   await store.deleteCode(id);
+  notifyWidgets(widgetSync.codeDeleted(id));
+}
+
+/** Widget refreshes are fire-and-forget: a tile failing to redraw must not fail a save. */
+function notifyWidgets(promise) {
+  promise.catch((e) => console.warn('[widgets] sync failed:', e?.message));
 }
 
 /**

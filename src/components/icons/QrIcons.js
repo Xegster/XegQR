@@ -10,6 +10,10 @@ import Svg, { Path, Circle, Rect, Line, Polyline } from "react-native-svg";
  * they work on gradient tiles and themed surfaces alike.
  *
  * All icons are drawn on a 24x24 canvas with a 2px stroke and round caps.
+ *
+ * `iconSvgMarkup` serialises the same drawings to an SVG string for the Android
+ * home-screen widget, which cannot host React components — so the tiles share
+ * this one icon set instead of carrying a copy.
  */
 
 const PATHS = {
@@ -225,6 +229,47 @@ const PATHS = {
 };
 
 export const ICON_NAMES = Object.keys(PATHS);
+
+const SVG_TAGS = new Map([
+  [Path, "path"],
+  [Circle, "circle"],
+  [Rect, "rect"],
+  [Line, "line"],
+  [Polyline, "polyline"],
+]);
+
+function escapeAttr(value) {
+  return String(value)
+    .replace(/&/g, "&amp;")
+    .replace(/"/g, "&quot;")
+    .replace(/</g, "&lt;")
+    .replace(/>/g, "&gt;");
+}
+
+function toMarkup(node) {
+  return React.Children.toArray(node)
+    .map((child) => {
+      if (child.type === React.Fragment) return toMarkup(child.props.children);
+      const tag = SVG_TAGS.get(child.type);
+      if (!tag) return "";
+      const attrs = Object.entries(child.props)
+        .filter(([key, value]) => key !== "children" && value !== undefined && value !== null)
+        .map(([key, value]) => `${key}="${escapeAttr(value)}"`)
+        .join(" ");
+      return `<${tag} ${attrs}/>`;
+    })
+    .join("");
+}
+
+/** A standalone SVG document for one icon, for renderers that take markup. */
+export function iconSvgMarkup(name, color = "#ffffff", strokeWidth = 2) {
+  const render = PATHS[name] ?? PATHS.qr;
+  return (
+    `<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" ` +
+    `stroke-width="${strokeWidth}" stroke-linecap="round" stroke-linejoin="round">` +
+    `${toMarkup(render(color))}</svg>`
+  );
+}
 
 export default function Icon({ name, size = 22, color = "#ffffff", strokeWidth = 2, style }) {
   const render = PATHS[name] ?? PATHS.qr;

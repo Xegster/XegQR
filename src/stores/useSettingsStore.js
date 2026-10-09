@@ -23,6 +23,7 @@ const DEFAULTS = {
   perImageLimitBytes: DEFAULT_CACHE_LIMIT_BYTES,
   totalCacheLimitBytes: DEFAULT_TOTAL_CACHE_BYTES,
   lastUsedType: null,
+  boostBrightness: true,
 };
 
 async function persist(state) {
@@ -33,6 +34,7 @@ async function persist(state) {
     perImageLimitBytes: state.perImageLimitBytes,
     totalCacheLimitBytes: state.totalCacheLimitBytes,
     lastUsedType: state.lastUsedType,
+    boostBrightness: state.boostBrightness,
   };
   try {
     await AsyncStorage.setItem(STORAGE_KEY, JSON.stringify(payload));
@@ -90,6 +92,11 @@ const useSettingsStore = create((set, get) => ({
 
   setLastUsedType: (lastUsedType) => {
     set({ lastUsedType });
+    persist(get());
+  },
+
+  setBoostBrightness: (boostBrightness) => {
+    set({ boostBrightness });
     persist(get());
   },
 

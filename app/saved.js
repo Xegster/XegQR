@@ -131,6 +131,11 @@ export default function SavedScreen() {
 
                   <View style={styles.cardActions}>
                     <SmallAction
+                      icon="qr"
+                      label="Show"
+                      onPress={() => router.push(`/show/${code.id}`)}
+                    />
+                    <SmallAction
                       icon="copy"
                       label="Duplicate"
                       onPress={() => duplicateCode(code.id)}
@@ -191,7 +196,7 @@ const styles = StyleSheet.create({
   cardTitle: { fontSize: 15, fontWeight: "700" },
   cardType: { fontSize: 11, fontWeight: "700", textTransform: "uppercase", letterSpacing: 0.6 },
   cardPayload: { fontSize: 11, lineHeight: 15, marginTop: 2 },
-  cardActions: { flexDirection: "row", gap: 8 },
+  cardActions: { flexDirection: "row", flexWrap: "wrap", gap: 8 },
   smallAction: {
     flexDirection: "row",
     alignItems: "center",

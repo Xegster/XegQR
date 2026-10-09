@@ -21,6 +21,9 @@ offer the full catalogue with no backend, no API key, and no per-scan fee.
 | `expo-image-picker` | Choosing logo images. |
 | `expo-sqlite` / IndexedDB | Local storage — native and web respectively. |
 | `expo-linear-gradient` | Bento tile and panel gradients (UI only, not the codes). |
+| `react-native-android-widget` | Android home-screen tiles: config plugin, JS-defined widget layout, configuration screen, in-app preview. |
+| `expo-brightness` | Full brightness on the full-screen code view (window-level; no permission). |
+| `expo-keep-awake` | Keeps the screen on while the full-screen code is showing. |
 
 ## 1. Content types — 21 types, all built in-app
 
@@ -106,6 +109,7 @@ plainly instead of showing a camera that never fires.
 | Saved templates (style only, no content) | `expo-sqlite` | IndexedDB |
 | Cached logo images | `expo-sqlite` (data URIs) | IndexedDB |
 | Settings | AsyncStorage | AsyncStorage (localStorage) |
+| Home-screen tile bindings (Android) | AsyncStorage | — |
 
 IndexedDB rather than expo-sqlite's web build, which needs `SharedArrayBuffer`
 and therefore COOP/COEP headers a static host may not allow.
@@ -115,7 +119,44 @@ made right now — only *caching* it is skipped. Defaults are 2 MB per image and
 50 MB total, both adjustable in settings. When the total is reached, the
 least-recently-used images are evicted rather than the new pick refused.
 
-## 6. Deliberately not included
+## 6. Full-screen code and home-screen widget
+
+**Full-screen view** (`app/show/[id].js`, all platforms): one saved code as
+large as the screen allows, on a card in its own background colour, with the
+name and a close button. Reached from **Show** on any saved code, or from a
+home-screen tile. On Android and iOS it turns the screen to full brightness and
+keeps it awake while open, and puts brightness back when it closes or the app
+goes to the background (Settings → *Boost brightness when showing a code*, on by
+default). Android brightens only XegQR's own window, so no permission is needed;
+`WRITE_SETTINGS`, which `expo-brightness` would otherwise add, is blocked in
+`app.config.js`.
+
+**Home-screen widget** (Android only): a styled tile bound to one saved code.
+The tile is a shortcut, not the code — a QR code at widget size is too small to
+scan, and leaving it out means nothing secret sits on the home screen. Tapping
+it opens the full-screen view via `xegqr://show/<id>`.
+
+| Feature | Detail |
+|---|---|
+| Sizes | Small (2×1) and large (4×2), as two entries in the widget picker; both resizable |
+| Code | Picked when the tile is added; long-press the tile to pick another |
+| Label | Defaults to the code's name, editable — with a note that it is visible to anyone who sees the home screen |
+| Colours | Start from the code's own colours (one-time copy) or one of the app's eight palette hues; then solid or two-colour gradient, any hex, corner radius |
+| Text and icon colour | Automatic (best contrast over both gradient ends) or chosen, with a low-contrast warning |
+| Icon | The QR glyph, the code type's icon, or none — the app's own icon set, serialised to SVG |
+| Preview | Live, drawn by the widget library's native renderer, so it matches the home screen |
+| Rename | The tile's label follows the code's new name unless it was customised |
+| Delete | The tile shows *Code removed — tap to choose another*, which opens setup in the app |
+| Add from the app | Settings → Home-screen widget, on launchers that support pinning; otherwise the manual steps are shown |
+
+Each tile's binding (code id, label, colours, finished icon SVG) lives in one
+AsyncStorage record, and the tile renders from that alone — the headless widget
+task never opens SQLite or touches a payload. Code edits and deletes reach the
+tiles through `src/services/widgetSync`, called from the saved-code repository
+so every path is covered. The widget library is kept out of the web and iOS
+bundles with `.android.js` platform files.
+
+## 7. Deliberately not included
 
 | Feature | Where it exists | Why not here |
 |---|---|---|

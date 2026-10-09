@@ -158,7 +158,7 @@ export default function GenerateScreen() {
     setBusy(true);
     try {
       if (editId) {
-        await updateCode(String(editId), { name: name.trim() || undefined, values, style });
+        await updateCode(String(editId), { name, values, style });
       } else {
         await saveCode({ name, type: type.id, values, style });
       }

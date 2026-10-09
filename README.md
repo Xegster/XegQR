@@ -6,7 +6,8 @@ type ever leaves the device.
 
 21 code types, full visual styling (shapes, gradients, logos, captioned frames),
 light and dark themes, and local caching of the images and codes you want to
-reuse.
+reuse. On Android, a home-screen tile opens any saved code full screen at full
+brightness, ready to be scanned.
 
 See [docs/FEATURES.md](docs/FEATURES.md) for the complete feature inventory and
 which dependency provides each piece.
@@ -41,6 +42,11 @@ npx expo run:android
 ```bash
 npm test
 ```
+
+The Android home-screen widget is a native module, so it needs a development or
+EAS build (`npx expo run:android`); it does not exist in Expo Go. Its handlers
+are registered from the custom entry file `index.js`, which then loads
+expo-router as usual.
 
 ## Building for the web
 
@@ -103,21 +109,27 @@ force-close and reopen the app on the phone to pick it up. Pushing to
 ## Layout
 
 ```
+index.js                 entry: expo-router, plus the Android widget registrations
 app/                     expo-router routes
   index.js               bento grid of code types
   generate/[type].js     one generator screen for all 21 types
   saved.js               saved code library
+  show/[id].js           one code full screen, brightness boosted (widget tap target)
+  widget/[id].js         in-app setup for a home-screen tile (Android)
   scan.js                camera scanner
-  settings.js            theme, defaults, cache limits
+  settings.js            theme, defaults, cache limits, widget help
 src/
   components/            reusable UI (AppButton, BentoTile, Panel, QrPreview…)
     icons/QrIcons.js     hand-rolled SVG icon set
   theme/                 ThemeProvider + gradient palette
   stores/                Zustand stores
   db/                    store.native.js (SQLite) / store.web.js (IndexedDB)
-  services/              encoding, export, image cache
+  services/              encoding, export, image cache, widget sync
+  widgets/               Android home-screen tile: renderer, bindings, setup screen
+  hooks/                 useBrightnessBoost
   utils/                 payload builders, style resolution, colour helpers
 docs/FEATURES.md         full feature/provider matrix
+docs/WIDGET-PLAN.md      home-screen widget design
 ```
 
 ## Notes for future work
@@ -131,4 +143,8 @@ docs/FEATURES.md         full feature/provider matrix
   ids, which collide when two gradient codes share a page on the web. Do not
   remove it without checking the saved-codes list with several gradient codes.
 - **iOS** needs no code changes — it is already an Expo target; it just needs a
-  build and a developer account.
+  build and a developer account. The home-screen widget is Android-only; on
+  iOS the widget code resolves to no-op `.js` twins of the `.android.js` files.
+- **Widget code stays out of the web and iOS bundles** through platform files
+  (`register`, `widgetSync`, `TilePreview` each have a `.android.js` and a
+  plain `.js`). Import those by their bare name, never with the extension.

@@ -13,7 +13,9 @@ import Icon from "../src/components/icons/QrIcons";
 import { SegmentedControl, SwitchRow, StepperRow } from "../src/components/OptionRow";
 import { ERROR_CORRECTION_LEVELS } from "../src/utils/qrStyleOptions";
 import { formatBytes } from "../src/services/imageCache";
-import { confirm } from "../src/utils/crossPlatformAlert";
+import { pinWidget } from "../src/services/widgetSync";
+import { alert, confirm } from "../src/utils/crossPlatformAlert";
+import { isAndroid, isNativeApp } from "../src/utils/platform";
 
 const MB = 1024 * 1024;
 const appVersion = Constants.expoConfig?.extra?.appVersion ?? Constants.expoConfig?.version;
@@ -34,6 +36,8 @@ export default function SettingsScreen() {
   const setPerImageLimitBytes = useSettingsStore((s) => s.setPerImageLimitBytes);
   const totalCacheLimitBytes = useSettingsStore((s) => s.totalCacheLimitBytes);
   const setTotalCacheLimitBytes = useSettingsStore((s) => s.setTotalCacheLimitBytes);
+  const boostBrightness = useSettingsStore((s) => s.boostBrightness);
+  const setBoostBrightness = useSettingsStore((s) => s.setBoostBrightness);
 
   const images = useLibraryStore((s) => s.images);
   const usage = useLibraryStore((s) => s.usage);
@@ -48,6 +52,18 @@ export default function SettingsScreen() {
       },
       { confirmLabel: "Remove all", destructive: true }
     );
+  };
+
+  // Not every launcher supports adding a widget from inside an app; the manual
+  // route works everywhere.
+  const addWidget = async (widgetName) => {
+    const accepted = await pinWidget(widgetName);
+    if (!accepted) {
+      alert(
+        "Add it from the home screen",
+        "Your launcher doesn't support adding widgets from an app. Long-press an empty spot on your home screen, choose Widgets, then find XegQR."
+      );
+    }
   };
 
   return (
@@ -85,6 +101,57 @@ export default function SettingsScreen() {
             hint="Higher levels survive damage and logos, at the cost of a denser code."
           />
         </Panel>
+
+        {isNativeApp ? (
+          <Panel
+            title="Showing a code"
+            subtitle="The full-screen view of a saved code"
+            icon={<Icon name="sun" size={18} color={tokens.PrimaryColor} />}
+          >
+            <SwitchRow
+              testID="setting-brightness"
+              label="Boost brightness when showing a code"
+              hint="Turns the screen up to full while a code is on screen, then puts it back. Scanners read a bright screen far more reliably."
+              value={boostBrightness}
+              onValueChange={setBoostBrightness}
+            />
+          </Panel>
+        ) : null}
+
+        {isAndroid ? (
+          <Panel
+            title="Home-screen widget"
+            subtitle="A tile that opens one saved code"
+            icon={<Icon name="app" size={18} color={tokens.PrimaryColor} />}
+          >
+            <Text style={[styles.body, { color: tokens.textMuted }]}>
+              Put a tile for a saved code on your home screen — your Wi-Fi, a contact card, a link
+              you share often. Tap it and the code opens full screen, ready to scan.
+              The tile shows only its label and colours, never the code itself.
+            </Text>
+            <Text style={[styles.body, { color: tokens.textMuted }]}>
+              Long-press an empty spot on your home screen, choose Widgets, then find XegQR. To restyle
+              a tile or point it at another code later, long-press it and tap its edit option
+              (Android 12 and later).
+            </Text>
+            <View style={styles.widgetButtons}>
+              <AppButton
+                label="Add small tile"
+                variant="outline"
+                size="sm"
+                onPress={() => addWidget("QrTileCompact")}
+                style={styles.widgetButton}
+              />
+              <AppButton
+                label="Add large tile"
+                variant="outline"
+                size="sm"
+                onPress={() => addWidget("QrTileLarge")}
+                style={styles.widgetButton}
+              />
+            </View>
+          </Panel>
+        ) : null}
 
         <Panel
           title="Image cache"
@@ -169,4 +236,6 @@ const styles = StyleSheet.create({
   aboutLabel: { fontSize: 14, fontWeight: "500" },
   aboutValue: { fontSize: 14, fontWeight: "600" },
   divider: { height: 1, marginHorizontal: -4 },
+  widgetButtons: { flexDirection: "row", flexWrap: "wrap", gap: 8 },
+  widgetButton: { flexGrow: 1 },
 });
