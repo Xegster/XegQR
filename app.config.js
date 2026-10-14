@@ -105,7 +105,7 @@ module.exports = {
       typedRoutes: false,
     },
     extra: {
-      appVersion: "0.2.1",
+      appVersion: "0.2.2",
       router: {},
       eas: {
         projectId: "e0a13e09-1c6f-4963-a2f9-2e96fd4c5938",
