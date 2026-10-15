@@ -2,7 +2,7 @@
 
 > **Purpose:** What has to be true, and in what order, to release XegQR alongside NetXegManager and PoGoAccountManager. Written for this app specifically: no login, no backend, no database, no email, no Firebase. That removes most of what the sibling roadmaps spend their time on.
 
-**Written:** 2026-10-09 | **Baseline:** `extra.appVersion` 0.1.6, `expo.version` 0.1.0, Android package `com.xegster.xegqr`
+**Written:** 2026-10-09 | **Baseline:** `extra.appVersion` 0.1.6, `expo.version` 0.1.0 (now 0.2.2 and 0.2.1 after the widget), Android package `com.xegster.xegqr`
 
 ## Targets
 
@@ -84,7 +84,7 @@ These are the places a static, device-local app is most likely to disappoint on 
 | 2.3 | **Image export on web** | Confirm PNG and SVG download, copy-to-clipboard and Web Share behave on Chrome, Firefox, Safari (iOS Safari is the usual failure) |
 | 2.4 | **Logo upload on web** | `expo-image-picker` falls back to a file input; confirm the per-image size limit and cache-full messages render |
 | 2.5 | **Mobile web layout** | Recent commits pinned the QR to the top and wrapped option rows on web. Re-check at 375px and tablet, in both themes |
-| 2.6 | **Alerts on web** | `Alert.alert` is a no-op in the browser. `src/utils/crossPlatformAlert.js` exists; grep for any remaining direct `Alert` use |
+| 2.6 | **Alerts on web** | `Alert.alert` is a no-op in the browser. `src/utils/crossPlatformAlert.js` exists; grep for any remaining direct `Alert` use. **Done (2026-10-15):** grep finds `Alert.alert` only inside the helper |
 | 2.7 | **Bundle size / first load** | Single-page export ships everything up front. Check the gzipped JS size; if it is heavy, consider lazy-loading the scan screen (it pulls in the camera module) |
 
 You run these on a real device and browser. Nothing here is checked by tests.
@@ -92,6 +92,8 @@ You run these on a real device and browser. Nothing here is checked by tests.
 ---
 
 ## Phase 2b - Android home-screen widget
+
+**Status (2026-10-15):** built and committed at 0.2.1. Only the device test checklist in `WIDGET-PLAN.md` is left.
 
 A widget bound to one saved code; tapping it opens that code full-screen. Full design, work breakdown and risks are in [`WIDGET-PLAN.md`](WIDGET-PLAN.md). It adds a native module, so it forces the `expo.version` / OTA decision in 4.2, and it should land before the closed test (4.10) starts.
 
@@ -131,9 +133,9 @@ Everything below is true of the code today. The legal text should be reviewed ag
 | 4.1 | Fix versioning before the first production build | `app.config.js` has `android.versionCode: 1` while `eas.json` uses `appVersionSource: remote`. With remote source EAS owns the code; add `"autoIncrement": true` to the `production` build profile so uploads do not collide. Remove or ignore the config `versionCode` accordingly |
 | 4.2 | **Decided: keep `expo.version` as the runtime version** (no reset for 1.0). What it does for OTA | `runtimeVersion.policy: "appVersion"` makes `expo.version` (0.1.0) the OTA compatibility key: an OTA update only reaches builds with the same runtime version. It exists so a JS update that needs a new native module is never delivered to an old binary, which would crash it. While you only change JS, leave it alone. Bump it (an explicit change, your call) whenever a native dependency or permission changes. Before the first Play build there are no installs, so 1.0 is a clean moment to reset it if you want |
 | 4.3 | Production OTA channel | Today only `preview` receives updates. Add a production publish step (manual `workflow_dispatch` is enough) targeting `--channel production`, run from `main` only |
-| 4.4 | Permissions audit | Confirm the generated manifest requests only camera and, for save-to-gallery, the media permission. `recordAudioAndroid: false` is already set. Remove anything `expo-media-library` adds that is not needed on modern Android (scoped storage) |
+| 4.4 | Permissions audit | Confirm the generated manifest requests only camera and, for save-to-gallery, the media permission. `recordAudioAndroid: false` is already set. **Partly done (2026-10-15):** `WRITE_SETTINGS` is in `blockedPermissions`; the media permission check remains. Remove anything `expo-media-library` adds that is not needed on modern Android (scoped storage) |
 | 4.4a | Play developer account | Not created yet. One-time registration fee and identity verification (can take days), shared by all three apps and created in the other project. XegQR waits on it. See 4.10 for why the account type matters |
-| 4.5 | Play service account | Create the Google Cloud service account, grant it in Play Console, download the JSON to the repo root, and confirm `google-service-account.json` is gitignored (it is not listed in `.gitignore` today, so add it) |
+| 4.5 | Play service account | Create the Google Cloud service account, grant it in Play Console, download the JSON to the repo root, and confirm `google-service-account.json` is gitignored (**done:** it is, along with `*-service-account.json`) |
 | 4.6 | Create the Play Console app | Name XegQR, default language, free, app (not game) |
 | 4.7 | Store listing assets | Title, short description (80 chars), full description, 512x512 icon (from `assets/icon.png`), **1024x500 feature graphic** (not in the repo), 2-8 phone screenshots in both themes. The README/FEATURES list is good source copy |
 | 4.8 | Play Console declarations | Privacy policy URL (0.3). **Data safety:** no data collected or shared (camera frames and selected images are processed on-device only). Content rating questionnaire. Target audience: general. Ads: none. **Financial features:** the app generates bank-transfer and crypto payment QR codes but is not a wallet or financial service; answer the financial-features declaration accordingly. App access: no login, so no test credentials needed |

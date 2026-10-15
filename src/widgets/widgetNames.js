@@ -1,22 +1,16 @@
 /**
- * widgetNames — the widget providers declared in app.config.js, and what each
- * one means here. Kept in a file of its own, with no imports, because the
- * headless widget task loads it and should load as little as possible.
+ * widgetNames — the widget provider declared in app.config.js, and the links a
+ * tile opens. Kept in a file of its own, with no imports, because the headless
+ * widget task loads it and should load as little as possible.
  *
- * The names are the Java class names the config plugin generates, so they must
- * match app.config.js exactly.
+ * The name is the Java class name the config plugin generates, so it must match
+ * app.config.js exactly. There is one provider, and it is 1x1: the tile is an
+ * icon, and the icon is chosen per tile (see tileIcons.js).
  */
 
-export const WIDGET_SIZES = Object.freeze({
-  QrTileCompact: 'compact',
-  QrTileLarge: 'large',
-});
+export const WIDGET_NAME = 'QrTile';
 
-export const WIDGET_NAMES = Object.keys(WIDGET_SIZES);
-
-export function sizeForWidget(widgetName) {
-  return WIDGET_SIZES[widgetName] ?? 'compact';
-}
+export const WIDGET_NAMES = [WIDGET_NAME];
 
 /**
  * Where a tile with nothing to show sends the user: the in-app setup screen for

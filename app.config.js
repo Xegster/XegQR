@@ -2,7 +2,7 @@ module.exports = {
   expo: {
     name: "XegQR",
     slug: "xegqr",
-    version: "0.2.1",
+    version: "0.2.2",
     orientation: "portrait",
     assetBundlePatterns: ["assets/**/*"],
     icon: "./assets/icon.png",
@@ -61,33 +61,21 @@ module.exports = {
         },
       ],
       [
-        // Home-screen tiles that open one saved code full screen. Two providers
-        // so each size gets its own entry in the launcher's widget picker. See
-        // src/widgets/ and docs/WIDGET-PLAN.md.
+        // A home-screen tile that opens one saved code full screen. One provider,
+        // 1x1 and not resizable: the tile is an icon. See src/widgets/ and
+        // docs/WIDGET-PLAN.md.
         "react-native-android-widget",
         {
           widgets: [
             {
-              name: "QrTileCompact",
-              label: "XegQR code (small)",
-              description: "A tile that opens one saved code, ready to scan",
-              minWidth: "110dp",
+              name: "QrTile",
+              label: "XegQR code",
+              description: "An icon that opens one saved code, ready to scan",
+              minWidth: "40dp",
               minHeight: "40dp",
-              targetCellWidth: 2,
+              targetCellWidth: 1,
               targetCellHeight: 1,
-              resizeMode: "horizontal|vertical",
-              widgetFeatures: "reconfigurable",
-              updatePeriodMillis: 0,
-            },
-            {
-              name: "QrTileLarge",
-              label: "XegQR code (large)",
-              description: "A large tile that opens one saved code, ready to scan",
-              minWidth: "250dp",
-              minHeight: "110dp",
-              targetCellWidth: 4,
-              targetCellHeight: 2,
-              resizeMode: "horizontal|vertical",
+              resizeMode: "none",
               widgetFeatures: "reconfigurable",
               updatePeriodMillis: 0,
             },
@@ -105,7 +93,7 @@ module.exports = {
       typedRoutes: false,
     },
     extra: {
-      appVersion: "0.2.2",
+      appVersion: "0.2.3",
       router: {},
       eas: {
         projectId: "e0a13e09-1c6f-4963-a2f9-2e96fd4c5938",

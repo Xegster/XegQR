@@ -6,16 +6,14 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
  *
  * One AsyncStorage record maps Android's widget id to a binding:
  *
- *   widgetId -> {
- *     widgetName, codeId, codeType,
- *     label, customLabel, source, background, textColor, iconMode, iconSvg, radius,
- *     removed, updatedOn,
- *   }
+ *   widgetId -> { widgetName, codeId, codeType, label, iconId, removed, updatedOn }
+ *
+ * `label` is the code's name. The tile draws no text, so it only serves as the
+ * tile's spoken description; `iconId` picks the picture (see tileIcons.js).
  *
  * The tile renders purely from this record. It never opens SQLite or touches a
  * QR payload, so the headless widget task needs nothing but AsyncStorage —
- * the least fragile arrangement, and the reason the icon is stored as finished
- * SVG markup rather than an icon name.
+ * the least fragile arrangement.
  *
  * Writes are read-modify-write on a single key, so they are queued: the app and
  * the widget task share one JS context, and two interleaved writes would
@@ -97,13 +95,12 @@ export function updateBindings(updater) {
 }
 
 /**
- * A code was edited. Only the label can follow, and only when the user has not
- * typed their own; style edits are deliberately not copied (the tile took a
- * one-time copy of the code's colours, if any).
+ * A code was edited. Only the label follows (the tile's spoken description);
+ * style edits do not matter to a tile, which shows an icon of its own.
  */
 export function applyCodeChange(binding, code) {
   if (!code?.name || binding?.codeId !== code.id) return binding;
-  if (binding.customLabel || binding.label === code.name) return binding;
+  if (binding.label === code.name) return binding;
   return { ...binding, label: code.name };
 }
 

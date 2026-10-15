@@ -14,6 +14,7 @@ import { SegmentedControl, SwitchRow, StepperRow } from "../src/components/Optio
 import { ERROR_CORRECTION_LEVELS } from "../src/utils/qrStyleOptions";
 import { formatBytes } from "../src/services/imageCache";
 import { pinWidget } from "../src/services/widgetSync";
+import { WIDGET_NAME } from "../src/widgets/widgetNames";
 import { alert, confirm } from "../src/utils/crossPlatformAlert";
 import { isAndroid, isNativeApp } from "../src/utils/platform";
 
@@ -127,26 +128,19 @@ export default function SettingsScreen() {
             <Text style={[styles.body, { color: tokens.textMuted }]}>
               Put a tile for a saved code on your home screen — your Wi-Fi, a contact card, a link
               you share often. Tap it and the code opens full screen, ready to scan.
-              The tile shows only its label and colours, never the code itself.
+              The tile is a single icon, never the code itself, and shows no text.
             </Text>
             <Text style={[styles.body, { color: tokens.textMuted }]}>
-              Long-press an empty spot on your home screen, choose Widgets, then find XegQR. To restyle
-              a tile or point it at another code later, long-press it and tap its edit option
+              Long-press an empty spot on your home screen, choose Widgets, then find XegQR. To change
+              a tile's icon or point it at another code later, long-press it and tap its edit option
               (Android 12 and later).
             </Text>
             <View style={styles.widgetButtons}>
               <AppButton
-                label="Add small tile"
+                label="Add tile"
                 variant="outline"
                 size="sm"
-                onPress={() => addWidget("QrTileCompact")}
-                style={styles.widgetButton}
-              />
-              <AppButton
-                label="Add large tile"
-                variant="outline"
-                size="sm"
-                onPress={() => addWidget("QrTileLarge")}
+                onPress={() => addWidget(WIDGET_NAME)}
                 style={styles.widgetButton}
               />
             </View>

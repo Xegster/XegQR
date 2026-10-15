@@ -131,25 +131,23 @@ default). Android brightens only XegQR's own window, so no permission is needed;
 `WRITE_SETTINGS`, which `expo-brightness` would otherwise add, is blocked in
 `app.config.js`.
 
-**Home-screen widget** (Android only): a styled tile bound to one saved code.
+**Home-screen widget** (Android only): a 1×1 icon bound to one saved code.
 The tile is a shortcut, not the code — a QR code at widget size is too small to
 scan, and leaving it out means nothing secret sits on the home screen. Tapping
 it opens the full-screen view via `xegqr://show/<id>`.
 
 | Feature | Detail |
 |---|---|
-| Sizes | Small (2×1) and large (4×2), as two entries in the widget picker; both resizable |
+| Size | 1×1 only, one entry in the widget picker, not resizable |
 | Code | Picked when the tile is added; long-press the tile to pick another |
-| Label | Defaults to the code's name, editable — with a note that it is visible to anyone who sees the home screen |
-| Colours | Start from the code's own colours (one-time copy) or one of the app's eight palette hues; then solid or two-colour gradient, any hex, corner radius |
-| Text and icon colour | Automatic (best contrast over both gradient ends) or chosen, with a low-contrast warning |
-| Icon | The QR glyph, the code type's icon, or none — the app's own icon set, serialised to SVG |
+| Icon | One of four copies of the app icon in different colours (cyan, green, ember, magenta); the catalogue is `src/widgets/tileIcons.js`, built to take more |
+| Text | None. The tile shows only its icon, so it gives nothing away about the code. The code's name is kept as the tile's spoken (TalkBack) description |
 | Preview | Live, drawn by the widget library's native renderer, so it matches the home screen |
-| Rename | The tile's label follows the code's new name unless it was customised |
-| Delete | The tile shows *Code removed — tap to choose another*, which opens setup in the app |
+| Rename | The tile's spoken description follows the code's new name |
+| Delete | The tile becomes a plain *Code removed — tap to choose* tile, which opens setup in the app |
 | Add from the app | Settings → Home-screen widget, on launchers that support pinning; otherwise the manual steps are shown |
 
-Each tile's binding (code id, label, colours, finished icon SVG) lives in one
+Each tile's binding (code id, name, icon id) lives in one
 AsyncStorage record, and the tile renders from that alone — the headless widget
 task never opens SQLite or touches a payload. Code edits and deletes reach the
 tiles through `src/services/widgetSync`, called from the saved-code repository

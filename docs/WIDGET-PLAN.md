@@ -6,6 +6,8 @@
 
 **Status:** implemented in `extra.appVersion` / `expo.version` **0.2.1**, pending the device test checklist below. See "As built" at the end for where the build differs from this plan.
 
+**Revised 2026-10-15: the widget is a single 1x1 icon.** The two sizes (2x1, 4x2), the label, and the colour, gradient and corner-radius styling described under "Styling" and "Storage" below are **superseded**: the tile is now just a picture, chosen from a list of icons (for now, the app icon in four colours). See "Revision: 1x1 icon tile" under "As built". The sections above it are kept as the original plan.
+
 ## Scope
 
 | In | Out |
@@ -160,9 +162,22 @@ Suggested order: W1, W2, W4, W3, W5, W7, W6, W8, W9.
 | Area | Where it differs from, or adds to, the plan |
 |---|---|
 | Removed-code tile | Tap opens an in-app setup route for that tile (`app/widget/[id].js`) instead of the Saved list, so "Tap to choose another" really lets you choose. The same route serves a tile pinned without the launcher's config screen ("Choose a code"). |
-| Settings | Besides the help text, "Add small tile" / "Add large tile" buttons use the library's `requestPinWidget`; launchers that refuse get the manual steps in an alert. |
+| Settings | Besides the help text, an "Add tile" button uses the library's `requestPinWidget`; launchers that refuse get the manual steps in an alert. |
 | Saved list | Each code has a **Show** action that opens the full-screen view, so it is reachable without a widget (and on web/iOS). |
-| Icon | Stored in the binding as finished SVG (from `QrIcons`' new `iconSvgMarkup`), so the tile needs no icon code at render time. Text colour is stored resolved, with `autoTextColor` remembering it was automatic. |
 | Platform split | `.android.js` / `.js` pairs (`src/widgets/register`, `src/services/widgetSync`, `src/widgets/TilePreview`) instead of a runtime-guarded lazy import. Verified: the web export contains no widget-library code. |
 | Permissions | `expo-brightness` is auto-applied by prebuild and adds `WRITE_SETTINGS`; `android.blockedPermissions` strips it. |
-| Picker preview | No `previewImage` yet, so the widget picker shows the app icon. Add a screenshot of each tile size once one exists. |
+| Picker preview | No `previewImage` yet, so the widget picker shows the app icon. Add a screenshot of the tile once one exists. |
+
+### Revision: 1x1 icon tile (2026-10-15)
+
+| Area | Change |
+|---|---|
+| Provider | One provider, `QrTile` (replaces `QrTileCompact` and `QrTileLarge`): `targetCellWidth/Height` 1, `minWidth/minHeight` 40dp, `resizeMode: "none"`. A tile added from an earlier build belongs to a removed provider, so the launcher drops it; add it again |
+| Look | The tile is an `ImageWidget` filling the cell. No label, background, gradient, radius or text colour, so nothing on the home screen says what the code is |
+| Icons | `src/widgets/tileIcons.js` is the catalogue (id, label, bundled image). For now it holds four copies of `assets/icon.png`, hue-rotated and cropped to a rounded square (`assets/widget-icons/` cyan, green, ember, magenta, 384x384). More icons later: add an entry and an image |
+| Binding | `{ widgetName, codeId, codeType, label, iconId, removed }`. `label` is the code's name and is only the tile's spoken (TalkBack) description; it still follows a rename. `iconId` falls back to the default if unknown |
+| Setup screen | Preview, code list, icon picker. The label, colour and radius controls are gone |
+| Removed code | A deleted or never-set-up tile switches to a plain dark tile with two short lines of text ("Code removed / Tap to choose", "Choose a code / Tap to set up") so it is obvious it needs attention. Tap still opens in-app setup for that tile |
+| Dropped | `src/widgets/tileStyle.js` and its tests (colour, gradient and text-contrast helpers used only by the old styling). `iconSvgMarkup` in `QrIcons` stays, now used only by its own test, in case glyph-style icons come back |
+
+Device checks to add: the icon fills the cell and stays sharp on a dense screen; all four icons render in the preview and on the home screen; the tile cannot be resized; a removed-code tile reads clearly at 1x1.

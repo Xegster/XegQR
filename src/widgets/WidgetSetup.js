@@ -1,91 +1,38 @@
 import React, { useEffect, useMemo, useState } from "react";
-import { View, Text, ScrollView, Pressable, ActivityIndicator, StyleSheet } from "react-native";
+import { View, Text, ScrollView, Pressable, Image, ActivityIndicator, StyleSheet } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { useTheme } from "../theme/ThemeProvider";
 import * as savedCodes from "../db/repositories/savedCodeRepository";
 import ScreenHeader from "../components/ScreenHeader";
 import Panel from "../components/Panel";
-import ColorField from "../components/ColorField";
-import ThemedTextInput from "../components/ThemedTextInput";
 import AppButton from "../components/AppButton";
-import Icon, { iconSvgMarkup } from "../components/icons/QrIcons";
-import { SegmentedControl, StepperRow } from "../components/OptionRow";
-import { GRADIENT_NAMES, getGradient } from "../theme/gradients";
+import Icon from "../components/icons/QrIcons";
 import { getQrType } from "../utils/qrPayloads";
 import { alert } from "../utils/crossPlatformAlert";
 import TilePreview from "./TilePreview";
 import { getBinding, saveBinding } from "./widgetBindings";
-import { sizeForWidget } from "./widgetNames";
-import {
-  MIN_TILE_CONTRAST,
-  backgroundStops,
-  codeBackground,
-  coloursFromSource,
-  defaultTile,
-  iconNameFor,
-  minContrast,
-  resolveTextColor,
-  retargetTile,
-  withFillType,
-} from "./tileStyle";
+import { DEFAULT_ICON_ID, TILE_ICONS, getTileIcon } from "./tileIcons";
 
-// Roughly what a launcher gives a 2x1 and a 4x2 widget on a typical phone, in dp.
-const PREVIEW_SIZE = {
-  compact: { width: 200, height: 76 },
-  large: { width: 320, height: 150 },
-};
-
-/** The style fields of a stored binding, back in the editable tile shape. */
-function tileFromBinding(binding) {
-  return {
-    label: binding.label ?? "",
-    customLabel: !!binding.customLabel,
-    source: binding.source ?? "custom",
-    background: binding.background,
-    textColor: binding.autoTextColor ? null : binding.textColor ?? null,
-    iconMode: binding.iconMode ?? "type",
-    radius: Number.isFinite(binding.radius) ? binding.radius : 20,
-  };
-}
+// Roughly what a launcher gives a 1x1 widget on a typical phone, in dp.
+const PREVIEW_SIZE = 88;
 
 /**
- * The record QrTile renders from. Colours are resolved here, once, so the tile
- * never has to work anything out: text colour is stored resolved (with
- * `autoTextColor` remembering it was automatic), and the icon is stored as
- * finished SVG in that colour.
+ * The record QrTile renders from. The label is the code's name; the tile shows
+ * no text, so it only serves as the tile's spoken description.
  */
-function bindingFor(tile, code, widgetName) {
-  const stops = backgroundStops(tile.background);
-  const background = {
-    type: tile.background?.type === "gradient" && stops.length >= 2 ? "gradient" : "solid",
-    colors: stops,
-  };
-  const label = tile.label.trim();
-  const textColor = resolveTextColor({ ...tile, background });
-  const iconName = iconNameFor(tile.iconMode, code.type);
+function bindingFor(iconId, code, widgetName) {
   return {
     widgetName,
     codeId: code.id,
     codeType: code.type,
-    label: label || code.name,
-    customLabel: !!label && label !== code.name,
-    source: tile.source,
-    background,
-    textColor,
-    autoTextColor: !tile.textColor,
-    iconMode: tile.iconMode,
-    iconSvg: iconName ? iconSvgMarkup(iconName, textColor) : null,
-    radius: tile.radius,
+    label: code.name,
+    iconId,
     removed: false,
   };
 }
 
-function capitalise(word) {
-  return word.charAt(0).toUpperCase() + word.slice(1);
-}
-
 /**
- * WidgetSetup — choose the code a home-screen tile opens, and style the tile.
+ * WidgetSetup — choose the code a home-screen tile opens, and the icon it shows.
  *
  * Shared by the widget library's configuration screen (shown when a tile is
  * added, or long-pressed to edit) and the in-app route a tile opens when it has
@@ -99,12 +46,11 @@ function capitalise(word) {
 export default function WidgetSetup({ widgetId, widgetName, onSaved, onCancel }) {
   const { tokens } = useTheme();
   const insets = useSafeAreaInsets();
-  const size = sizeForWidget(widgetName);
 
   const [codes, setCodes] = useState(null);
   const [error, setError] = useState(null);
   const [codeId, setCodeId] = useState(null);
-  const [tile, setTile] = useState(null);
+  const [iconId, setIconId] = useState(DEFAULT_ICON_ID);
   const [saving, setSaving] = useState(false);
 
   useEffect(() => {
@@ -116,18 +62,11 @@ export default function WidgetSetup({ widgetId, widgetName, onSaved, onCancel })
         setCodes(list);
         if (!list.length) return;
 
+        // An existing tile keeps its icon. If its code is gone it keeps the icon
+        // and is pointed at another code.
+        if (existing) setIconId(getTileIcon(existing.iconId).id);
         const current = existing ? list.find((c) => c.id === existing.codeId) : null;
-        if (current) {
-          setCodeId(current.id);
-          setTile(tileFromBinding(existing));
-        } else if (existing) {
-          // Its code is gone: keep the styling, point it at another code.
-          setCodeId(list[0].id);
-          setTile(retargetTile(tileFromBinding(existing), list[0]));
-        } else {
-          setCodeId(list[0].id);
-          setTile(defaultTile(list[0]));
-        }
+        setCodeId((current ?? list[0]).id);
       } catch (e) {
         if (!alive) return;
         setCodes([]);
@@ -141,17 +80,9 @@ export default function WidgetSetup({ widgetId, widgetName, onSaved, onCancel })
 
   const code = useMemo(() => codes?.find((c) => c.id === codeId) ?? null, [codes, codeId]);
   const binding = useMemo(
-    () => (tile && code ? bindingFor(tile, code, widgetName) : null),
-    [tile, code, widgetName]
+    () => (code ? bindingFor(iconId, code, widgetName) : null),
+    [iconId, code, widgetName]
   );
-
-  const update = (changes) => setTile((t) => ({ ...t, ...changes }));
-  const updateColours = (background) => update({ background, source: "custom" });
-
-  const selectCode = (next) => {
-    setCodeId(next.id);
-    setTile((t) => retargetTile(t, next));
-  };
 
   const handleSave = async () => {
     if (!binding) return;
@@ -165,13 +96,7 @@ export default function WidgetSetup({ widgetId, widgetName, onSaved, onCancel })
     }
   };
 
-  const header = (
-    <ScreenHeader
-      title={size === "large" ? "Large tile" : "Small tile"}
-      subtitle="Home-screen widget"
-      onBack={onCancel}
-    />
-  );
+  const header = <ScreenHeader title="Home-screen tile" subtitle="Choose a code and an icon" onBack={onCancel} />;
 
   if (codes === null) {
     return (
@@ -181,7 +106,7 @@ export default function WidgetSetup({ widgetId, widgetName, onSaved, onCancel })
     );
   }
 
-  if (!codes.length || !tile || !code) {
+  if (!codes.length || !code) {
     return (
       <View style={[styles.screen, { backgroundColor: tokens.background }]}>
         {header}
@@ -201,21 +126,6 @@ export default function WidgetSetup({ widgetId, widgetName, onSaved, onCancel })
     );
   }
 
-  const type = getQrType(code.type);
-  const stops = backgroundStops(tile.background);
-  const isGradient = tile.background?.type === "gradient";
-  const textColor = binding.textColor;
-  const contrast = minContrast(textColor, binding.background);
-
-  const sourceOptions = [
-    { value: "code", label: "This code's colours", swatch: codeBackground(code).colors[0] },
-    ...GRADIENT_NAMES.map((hue) => ({
-      value: hue,
-      label: capitalise(hue),
-      swatch: getGradient(hue, false)[1],
-    })),
-  ];
-
   return (
     <View style={[styles.screen, { backgroundColor: tokens.background }]}>
       {header}
@@ -225,22 +135,10 @@ export default function WidgetSetup({ widgetId, widgetName, onSaved, onCancel })
         keyboardShouldPersistTaps="handled"
       >
         <Panel contentStyle={styles.previewBody}>
-          <TilePreview
-            binding={binding}
-            widgetId={widgetId}
-            widgetName={widgetName}
-            width={PREVIEW_SIZE[size].width}
-            height={PREVIEW_SIZE[size].height}
-          />
+          <TilePreview binding={binding} widgetId={widgetId} widgetName={widgetName} size={PREVIEW_SIZE} />
           <Text style={[styles.hint, { color: tokens.textMuted }]}>
             Tapping the tile opens this code full screen, ready to scan.
           </Text>
-          {contrast < MIN_TILE_CONTRAST ? (
-            <Text style={[styles.warning, { color: tokens.warning }]}>
-              Low contrast ({contrast.toFixed(1)}:1) — the label may be hard to read. Try a different
-              text colour, or Automatic.
-            </Text>
-          ) : null}
         </Panel>
 
         <Panel
@@ -250,99 +148,26 @@ export default function WidgetSetup({ widgetId, widgetName, onSaved, onCancel })
         >
           <View style={styles.codeList}>
             {codes.map((c) => (
-              <CodeRow key={c.id} code={c} selected={c.id === codeId} onPress={() => selectCode(c)} />
+              <CodeRow key={c.id} code={c} selected={c.id === codeId} onPress={() => setCodeId(c.id)} />
             ))}
           </View>
         </Panel>
 
         <Panel
-          title="Label"
-          subtitle="Shown on the home screen"
-          icon={<Icon name="text" size={18} color={tokens.PrimaryColor} />}
-        >
-          <ThemedTextInput
-            testID="widget-label"
-            value={tile.label}
-            onChangeText={(text) => update({ label: text, customLabel: !!text.trim() && text.trim() !== code.name })}
-            placeholder={code.name}
-            hint="Anyone who sees your home screen can read this. If the code's name gives something away, like a Wi-Fi network name, change it here."
-          />
-        </Panel>
-
-        <Panel
-          title="Colours"
-          subtitle="Background, text and corners"
-          icon={<Icon name="palette" size={18} color={tokens.PrimaryColor} />}
-        >
-          <SegmentedControl
-            label="Start from"
-            testID="widget-source"
-            value={tile.source}
-            options={sourceOptions}
-            onChange={(source) => update({ source, ...coloursFromSource(source, code) })}
-          />
-          <SegmentedControl
-            label="Fill"
-            testID="widget-fill"
-            value={isGradient ? "gradient" : "solid"}
-            options={[
-              { value: "solid", label: "Solid" },
-              { value: "gradient", label: "Gradient" },
-            ]}
-            onChange={(fill) => updateColours(withFillType(tile.background, fill))}
-          />
-          {isGradient ? (
-            <>
-              <ColorField
-                label="Gradient start"
-                value={stops[0]}
-                onChange={(hex) => updateColours({ type: "gradient", colors: [hex, stops[1] ?? stops[0]] })}
-              />
-              <ColorField
-                label="Gradient end"
-                value={stops[1] ?? stops[0]}
-                onChange={(hex) => updateColours({ type: "gradient", colors: [stops[0], hex] })}
-              />
-            </>
-          ) : (
-            <ColorField
-              label="Background"
-              value={stops[0]}
-              onChange={(hex) => updateColours({ type: "solid", colors: [hex] })}
-            />
-          )}
-          <ColorField
-            label="Text and icon"
-            value={tile.textColor}
-            allowInherit
-            inheritLabel="Automatic"
-            onChange={(hex) => update({ textColor: hex })}
-          />
-          <StepperRow
-            label="Corner radius"
-            testID="widget-radius"
-            value={tile.radius}
-            onChange={(radius) => update({ radius })}
-            min={0}
-            max={32}
-            step={4}
-          />
-        </Panel>
-
-        <Panel
           title="Icon"
+          subtitle="The tile shows only this picture, never the code or its name"
           icon={<Icon name="image" size={18} color={tokens.PrimaryColor} />}
         >
-          <SegmentedControl
-            testID="widget-icon"
-            value={tile.iconMode}
-            options={[
-              { value: "qr", label: "QR code" },
-              { value: "type", label: type?.label ?? "Code type" },
-              { value: "none", label: "None" },
-            ]}
-            onChange={(iconMode) => update({ iconMode })}
-          />
+          <View style={styles.iconList} testID="widget-icon">
+            {TILE_ICONS.map((option) => (
+              <IconChoice
+                key={option.id}
+                option={option}
+                selected={option.id === iconId}
+                onPress={() => setIconId(option.id)}
+              />
+            ))}
+          </View>
         </Panel>
 
         <View style={styles.actions}>
@@ -357,6 +182,32 @@ export default function WidgetSetup({ widgetId, widgetName, onSaved, onCancel })
         </View>
       </ScrollView>
     </View>
+  );
+}
+
+function IconChoice({ option, selected, onPress }) {
+  const { tokens } = useTheme();
+  return (
+    <Pressable
+      testID={`widget-icon-${option.id}`}
+      accessibilityRole="radio"
+      accessibilityState={{ selected }}
+      accessibilityLabel={`${option.label} icon`}
+      onPress={onPress}
+      style={({ pressed }) => [
+        styles.iconChoice,
+        {
+          borderColor: selected ? tokens.PrimaryColor : tokens.border,
+          borderWidth: selected ? 2 : 1,
+          opacity: pressed ? 0.75 : 1,
+        },
+      ]}
+    >
+      <Image source={option.image} style={styles.iconImage} />
+      <Text style={[styles.iconLabel, { color: selected ? tokens.PrimaryColor : tokens.textMuted }]}>
+        {option.label}
+      </Text>
+    </Pressable>
   );
 }
 
@@ -398,7 +249,6 @@ const styles = StyleSheet.create({
   scroll: { padding: 16, gap: 12, alignSelf: "center", width: "100%", maxWidth: 720 },
   previewBody: { alignItems: "center", gap: 10 },
   hint: { fontSize: 12, textAlign: "center" },
-  warning: { fontSize: 11, textAlign: "center", maxWidth: 300 },
   codeList: { gap: 8 },
   codeRow: {
     flexDirection: "row",
@@ -411,6 +261,10 @@ const styles = StyleSheet.create({
   codeText: { flex: 1 },
   codeName: { fontSize: 14, fontWeight: "600" },
   codeType: { fontSize: 11, marginTop: 1 },
+  iconList: { flexDirection: "row", flexWrap: "wrap", gap: 10 },
+  iconChoice: { alignItems: "center", gap: 6, borderRadius: 14, padding: 8 },
+  iconImage: { width: 64, height: 64 },
+  iconLabel: { fontSize: 11, fontWeight: "600" },
   actions: { flexDirection: "row", gap: 10 },
   action: { flex: 1 },
   empty: { alignItems: "center", gap: 10, paddingVertical: 60, paddingHorizontal: 24 },

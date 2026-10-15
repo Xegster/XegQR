@@ -10,15 +10,11 @@ import {
 } from "../widgetBindings";
 
 const binding = {
-  widgetName: "QrTileCompact",
+  widgetName: "QrTile",
   codeId: "qr_1",
   codeType: "wifi",
   label: "Home network",
-  customLabel: false,
-  background: { type: "solid", colors: ["#000000"] },
-  textColor: "#ffffff",
-  iconMode: "type",
-  radius: 20,
+  iconId: "cyan",
 };
 
 beforeEach(async () => {
@@ -26,14 +22,9 @@ beforeEach(async () => {
 });
 
 describe("applyCodeChange", () => {
-  it("follows a rename when the label was never customised", () => {
+  it("follows a rename and keeps the tile's icon", () => {
     const next = applyCodeChange(binding, { id: "qr_1", name: "Cabin Wi-Fi" });
-    expect(next.label).toBe("Cabin Wi-Fi");
-  });
-
-  it("keeps a label the user typed", () => {
-    const custom = { ...binding, label: "Guest", customLabel: true };
-    expect(applyCodeChange(custom, { id: "qr_1", name: "Cabin Wi-Fi" })).toBe(custom);
+    expect(next).toEqual({ ...binding, label: "Cabin Wi-Fi" });
   });
 
   it("returns the same object when nothing changes, so callers can skip the write", () => {
