@@ -2,7 +2,7 @@
 
 > **Purpose:** What has to be true, and in what order, to release XegQR alongside NetXegManager and PoGoAccountManager. Written for this app specifically: no login, no backend, no database, no email, no Firebase. That removes most of what the sibling roadmaps spend their time on.
 
-**Written:** 2026-10-09 | **Baseline:** `extra.appVersion` 0.1.6, `expo.version` 0.1.0 (now 0.2.2 and 0.2.1 after the widget), Android package `com.xegster.xegqr`
+**Written:** 2026-10-09 | **Baseline:** `extra.appVersion` 0.1.6, `expo.version` 0.1.0 (now 0.2.3 and 0.2.2 after the widget), Android package `com.xegster.xegqr`
 
 ## Targets
 
@@ -93,7 +93,7 @@ You run these on a real device and browser. Nothing here is checked by tests.
 
 ## Phase 2b - Android home-screen widget
 
-**Status (2026-10-15):** built and committed at 0.2.1. Only the device test checklist in `WIDGET-PLAN.md` is left.
+**Status (2026-10-15): done.** Built as a single 1x1 icon tile (four colour variants of the app icon) and committed at `appVersion` 0.2.3 / `expo.version` 0.2.2. Only the device test checklist in `WIDGET-PLAN.md` is left, run by you.
 
 A widget bound to one saved code; tapping it opens that code full-screen. Full design, work breakdown and risks are in [`WIDGET-PLAN.md`](WIDGET-PLAN.md). It adds a native module, so it forces the `expo.version` / OTA decision in 4.2, and it should land before the closed test (4.10) starts.
 

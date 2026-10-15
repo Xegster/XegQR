@@ -4,7 +4,7 @@
 
 **Written:** 2026-10-09 (revised same day) | **Baseline:** `extra.appVersion` 0.1.6, `expo.version` 0.1.0
 
-**Status:** implemented in `extra.appVersion` / `expo.version` **0.2.1**, pending the device test checklist below. See "As built" at the end for where the build differs from this plan.
+**Status:** **Done (2026-10-15)**, as the 1x1 icon tile (see "Revision: 1x1 icon tile" under "As built"). Shipped in `expo.version` 0.2.2 / `extra.appVersion` 0.2.3. Only the device test checklist below is left, and it is yours to run.
 
 **Revised 2026-10-15: the widget is a single 1x1 icon.** The two sizes (2x1, 4x2), the label, and the colour, gradient and corner-radius styling described under "Styling" and "Storage" below are **superseded**: the tile is now just a picture, chosen from a list of icons (for now, the app icon in four colours). See "Revision: 1x1 icon tile" under "As built". The sections above it are kept as the original plan.
 
