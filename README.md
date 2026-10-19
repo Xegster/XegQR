@@ -56,34 +56,29 @@ npx expo export -p web
 
 Output lands in `dist/` as a static bundle.
 
-## Web hosting (EAS)
+## Web hosting (Cloudflare)
 
-One-time setup, interactively, from a machine logged into the project's Expo
-account:
-
-```bash
-npx eas-cli deploy
-```
-
-The first run asks you to link the project to EAS Hosting and pick a
-subdomain (e.g. `xegqr`) — after that, deploys are non-interactive.
+Production address: `https://qr.xegster.com.au`. Same setup as
+PoGoAccountManager: a Cloudflare **Workers static-assets** project.
+[`wrangler.jsonc`](wrangler.jsonc) serves `dist/` and sends any path that is not
+a file to `index.html`, so a refresh on `/saved` works. Files in `public/` are
+copied into `dist/`; `public/_headers` sets security and caching headers and
+`public/robots.txt` allows crawling.
 
 ```bash
-npx eas-cli deploy --alias preview
+npx wrangler login    # once
+npm run deploy:web    # expo export -p web, then wrangler deploy
 ```
 
-Deploys the current `dist/` build to `preview--<subdomain>.expo.app` without
-touching production. Pushing to `develop` does this automatically via
-`.github/workflows/eas-hosting-deploy.yml`, reusing the same `EXPO_TOKEN`
-secret as the Android OTA workflow.
+The first deploy creates the Worker `xegqr` (the `name` in `wrangler.jsonc`) and
+prints its `workers.dev` address. Then add the custom domain in the dashboard:
+Worker, Settings, Domains & Routes, Add, Custom domain, `qr.xegster.com.au`
+(`xegster.com.au` must be a zone in the same Cloudflare account). Git-connected
+builds and the `develop` preview are described in `docs/RELEASE-ROADMAP.md`.
 
-```bash
-npx eas-cli deploy --prod
-```
-
-Promotes a build to the production URL, `<subdomain>.expo.app`. Run
-`npx expo export -p web` first — `eas deploy` uploads whatever is already in
-`dist/`, it does not build it for you.
+Until the move is finished the `develop` push still deploys to EAS Hosting via
+`.github/workflows/eas-hosting-deploy.yml`; delete that workflow once
+`qr.xegster.com.au` is live.
 
 ## Android preview distribution (EAS)
 

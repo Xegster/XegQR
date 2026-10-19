@@ -8,7 +8,7 @@
 
 | Surface | Where | Notes |
 |---|---|---|
-| Web app | `https://qr.xegster.com.au` | Cloudflare Pages, static export from `expo export -p web` |
+| Web app | `https://qr.xegster.com.au` | Cloudflare Workers static assets (same as PoGoAccountManager), static export from `expo export -p web` |
 | Legal | `https://xegster.com.au/ToS` and sibling pages | `/ToS` is shorthand for the whole set of legal/policy pages Google Play (and similar gates) require. Shared by all three apps and built once as its own phase (Phase 3). XegQR only links to it |
 | Android | Google Play | Package `com.xegster.xegqr` already set |
 | iOS | Not planned | **Decided:** no iOS for any app until after the Android release, possibly never. `bundleIdentifier` and the encryption flag are already set, so nothing blocks it if that changes |
@@ -36,6 +36,17 @@
 
 ---
 
+## Priority task: staging and production on one Worker (HIGH, do before the other open 1.0 work)
+
+**Added 2026-10-16.** Same setup as Xegster (`C:\Development\Xegster`: `SETUP.md` section 2). One fixed staging address and one production address; no second Worker.
+
+- **One Worker, two branches.** The production branch builds and deploys the Worker as it does today. The `develop` branch is staging: on the Worker, Settings, Build, Previews, turn **Builds for preview branches** on and keep the default preview command. A push to `develop` then builds a preview with a stable branch address on `workers.dev`; confirm the exact URL from the first build.
+- **No code change needed.** Do not add a second Worker or `env.staging` to `wrangler.jsonc`.
+- **Flow:** work on `develop`, check the preview, merge into the production branch to release.
+- **Open checks:** any other branch you push also gets a preview URL (no branch filter found); the preview shares the production backend, so decide whether staging needs its own data; previews should not be indexed by search engines. XegQR is still on EAS Hosting (see "Current state"), so do this as part of the move to Cloudflare Workers; `qr.xegster.com.au` is the production address.
+- **Docs to update when done:** this roadmap, `Publish.md` / `SETUP.md` (Cloudflare section), the `README.md` deploy note.
+---
+
 ## Phase 0 - Decisions and prerequisites (no code)
 
 | # | Item | Status |
@@ -50,24 +61,22 @@
 
 ---
 
-## Phase 1 - Move web hosting to Cloudflare Pages
+## Phase 1 - Move web hosting to Cloudflare Workers
 
 Goal: `qr.xegster.com.au` serves the app; EAS Hosting is retired.
 
 | # | Item | Notes |
 |---|---|---|
-| 1.1 | Create the Pages project `xegqr`, connected to the GitHub repo | Build command `npx expo export -p web`, output directory `dist`, env `NODE_VERSION=22` (matches the workflows). Production branch `main`; `develop` gets a preview deployment automatically |
-| 1.2 | First deploy lands on `xegqr.pages.dev` and works | Check by hand: create, style, save, reload (IndexedDB persists), export PNG/SVG |
-| 1.3 | Add custom domain `qr.xegster.com.au` to the Pages project | Cloudflare creates the CNAME since the zone is already there. Wait for the certificate to go Active |
-| 1.4 | SPA fallback | `web.output` is `single`, so the export is one `index.html`. Pages serves `index.html` for unknown paths when there is no `404.html`. Verify deep links work on hard refresh: `/saved`, `/settings`, `/generate/wifi` |
-| 1.5 | Add `public/_headers` | Expo copies `public/` into `dist/`. Contents: `Permissions-Policy: camera=(self)` (the scan screen needs the camera, nothing else needs anything), `X-Content-Type-Options: nosniff`, `Referrer-Policy: strict-origin-when-cross-origin`, `X-Frame-Options: DENY`, and long immutable caching for the hashed `/_expo/static/*` assets. Do **not** set a strict CSP blindly: the SVG export path in `src/services/qrExport.js` and `react-native-svg` use inline styles and blob/data URLs, and a wrong CSP breaks export silently. Add one only after testing |
-| 1.6 | `public/robots.txt`, plus `<title>`, description, and social preview tags | Today's title and favicon come from Expo defaults. Set `web.name`, `web.shortName`, `web.description`, `web.themeColor`/`backgroundColor` (`#121212` to match the splash) in `app.config.js`. Optional: a PWA manifest so it can be "installed", which also helps camera permission persistence on mobile |
+| 1.1 | Create the Worker `xegqr` (`wrangler.jsonc` is in the repo, **done 2026-10-19**). First deploy by hand with `npm run deploy:web` (needs `npx wrangler login`), then connect it to the GitHub repo | Git build: build command `npx expo export -p web`, deploy command `npx wrangler deploy`, env `NODE_VERSION=22`. Production branch `main`; `develop` is staging via the priority task above |
+| 1.2 | First deploy lands on the `xegqr` `workers.dev` address and works | Check by hand: create, style, save, reload (IndexedDB persists), export PNG/SVG |
+| 1.3 | Add custom domain `qr.xegster.com.au` to the Worker (Settings, Domains & Routes) | Cloudflare creates the DNS record since the zone is already there (needs 0.1). Wait for the certificate to go Active |
+| 1.4 | SPA fallback | `web.output` is `single`, so the export is one `index.html`. `wrangler.jsonc` sets `not_found_handling: single-page-application`, so unknown paths get `index.html`. Verify deep links work on hard refresh: `/saved`, `/settings`, `/generate/wifi` |
+| 1.5 | Add `public/_headers` (**done 2026-10-19**, file is in the repo; verify the headers after the first deploy) | Expo copies `public/` into `dist/`. Contents: `Permissions-Policy: camera=(self)` (the scan screen needs the camera, nothing else needs anything), `X-Content-Type-Options: nosniff`, `Referrer-Policy: strict-origin-when-cross-origin`, `X-Frame-Options: DENY`, and long immutable caching for the hashed `/_expo/static/*` assets. Do **not** set a strict CSP blindly: the SVG export path in `src/services/qrExport.js` and `react-native-svg` use inline styles and blob/data URLs, and a wrong CSP breaks export silently. Add one only after testing |
+| 1.6 | `public/robots.txt` (**done 2026-10-19**) and web metadata in `app.config.js` (`web.name`, `shortName`, `description`, `themeColor`, `backgroundColor` **done 2026-10-19**); still open: social preview tags and optional PWA manifest. Original note: `public/robots.txt`, plus `<title>`, description, and social preview tags | Today's title and favicon come from Expo defaults. Set `web.name`, `web.shortName`, `web.description`, `web.themeColor`/`backgroundColor` (`#121212` to match the splash) in `app.config.js`. Optional: a PWA manifest so it can be "installed", which also helps camera permission persistence on mobile |
 | 1.7 | Retire EAS Hosting | Delete `.github/workflows/eas-hosting-deploy.yml`. Delete the EAS Hosting deployment/alias in the Expo dashboard. `EXPO_TOKEN` stays; the OTA workflow still uses it |
-| 1.8 | Redirects hygiene | Optional: redirect `xegqr.pages.dev` to the custom domain via a Bulk Redirect so there is one canonical URL |
+| 1.8 | Redirects hygiene | Optional: stop serving on `workers.dev` once the custom domain works, so there is one canonical URL |
 
-**Deploy behaviour (the requirement):** pushing to `develop` produces a preview deployment and pushing to `main` produces the production site, with no manual step. Connecting the Pages project to the GitHub repo gives exactly that, so it is the default plan. Cloudflare does the build, so the old `eas-hosting-deploy.yml` workflow is deleted once the first Pages deploy works.
-
-*Note:* Cloudflare now promotes Workers static assets over Pages for new projects. The sibling apps chose Pages, so stay consistent.
+**Deploy behaviour (the requirement):** pushing to `develop` produces a preview deployment and pushing to `main` produces the production site, with no manual step. Connecting the Worker to the GitHub repo gives exactly that, so it is the default plan. Cloudflare does the build (or `npm run deploy:web` by hand), so the old `eas-hosting-deploy.yml` workflow is deleted once the first Worker deploy works.
 
 **Exit:** `https://qr.xegster.com.au` loads over HTTPS, deep links survive refresh, the scan screen asks for the camera on Chrome, and the browser reports no mixed content or console errors.
 
@@ -96,6 +105,8 @@ You run these on a real device and browser. Nothing here is checked by tests.
 **Status (2026-10-15): done.** Built as a single 1x1 icon tile (four colour variants of the app icon) and committed at `appVersion` 0.2.3 / `expo.version` 0.2.2. Only the device test checklist in `WIDGET-PLAN.md` is left, run by you.
 
 A widget bound to one saved code; tapping it opens that code full-screen. Full design, work breakdown and risks are in [`WIDGET-PLAN.md`](WIDGET-PLAN.md). It adds a native module, so it forces the `expo.version` / OTA decision in 4.2, and it should land before the closed test (4.10) starts.
+
+**Follow-up: more widget icon options (not started).** Give the user a bigger curated set of icons to choose from for a widget tile, beyond the four colours of the app icon. No user-supplied images: every option is bundled with the app. Add entries and images to the catalogue in `src/widgets/tileIcons.js` (already built to take more), and make sure the picker in the widget setup screen copes with a longer list while keeping the live preview. `iconId` already falls back to the default if unknown, so no binding change is needed. Which icons to include is still to be decided. Design to be added to `WIDGET-PLAN.md` when picked up.
 
 ---
 
@@ -149,10 +160,10 @@ Everything below is true of the code today. The legal text should be reviewed ag
 | # | Item | Notes |
 |---|---|---|
 | 5.1 | Final pre-release checks | `appVersion` bumped (project rule: every merge to `develop`/`main`), README and `docs/FEATURES.md` updated, no stale EAS Hosting references |
-| 5.2 | Merge `develop` to `main` | Pages production deploy fires; verify `qr.xegster.com.au` serves the new build |
+| 5.2 | Merge `develop` to `main` | Worker production deploy fires; verify `qr.xegster.com.au` serves the new build |
 | 5.3 | Promote Play release | Internal, then production (or closed, per 4.10). Staged rollout is sensible for a first release |
 | 5.4 | Cross-links | Link web to Play listing and Play listing to the website. The "App download" QR type already knows the `com.xegster.xegqr` Play URL; make sure the listing is live before relying on it |
-| 5.5 | Post-launch watch | Play vitals/crash reports, Cloudflare Pages build and certificate status. No backend to monitor |
+| 5.5 | Post-launch watch | Play vitals/crash reports, Cloudflare Worker build and certificate status. No backend to monitor |
 
 ---
 
@@ -160,7 +171,7 @@ Everything below is true of the code today. The legal text should be reviewed ag
 
 ```mermaid
 flowchart TB
-  P0[Phase 0 Decisions] --> P1[Phase 1 Cloudflare Pages]
+  P0[Phase 0 Decisions] --> P1[Phase 1 Cloudflare Worker]
   P0 --> P3[Phase 3 Shared legal docs]
   P0 --> P4[Phase 4 Android prep]
   P1 --> P2[Phase 2 Web correctness]
@@ -190,4 +201,4 @@ flowchart TB
 
 - **PoGoAccountManager** planned its own legal pages; Phase 3.6 replaces them with the shared set.
 - **NetXegManager** uses a different domain (`tmtracker.com.au`). Confirm whether it links to the shared `xegster.com.au` pages or needs its own, since a policy on another brand's domain can look odd on its Play listing.
-- This repo's rule that `extra.appVersion` is bumped on every merge to `develop`/`main` also applies to the commit that lands the Pages move.
+- This repo's rule that `extra.appVersion` is bumped on every merge to `develop`/`main` also applies to the commit that lands the Cloudflare move.

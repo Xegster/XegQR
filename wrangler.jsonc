@@ -1,0 +1,13 @@
+// Cloudflare static-assets config for the web build (README, "Web hosting").
+// `name` is the Worker's name in the Cloudflare dashboard and picks its default
+// <name>.<account>.workers.dev address, so a Git-connected build must use the same name.
+{
+  "name": "xegqr",
+  "compatibility_date": "2026-10-01",
+  "assets": {
+    "directory": "./dist",
+    // Anything that is not a file in dist/ (a refresh on /saved, a deep link) gets
+    // index.html, and Expo Router picks the screen on the client.
+    "not_found_handling": "single-page-application"
+  }
+}
