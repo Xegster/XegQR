@@ -30,4 +30,6 @@ jobs:
         run: npm ci
 
       - name: Publish update
-        run: eas update --channel preview --message "${{ github.event.head_commit.message }}" --non-interactive
+        env:
+          MSG: ${{ github.event.head_commit.message }}
+        run: eas update --channel preview --message "$MSG" --non-interactive
