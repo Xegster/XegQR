@@ -181,3 +181,28 @@ Suggested order: W1, W2, W4, W3, W5, W7, W6, W8, W9.
 | Dropped | `src/widgets/tileStyle.js` and its tests (colour, gradient and text-contrast helpers used only by the old styling). `iconSvgMarkup` in `QrIcons` stays, now used only by its own test, in case glyph-style icons come back |
 
 Device checks to add: the icon fills the cell and stays sharp on a dense screen; all four icons render in the preview and on the home screen; the tile cannot be resized; a removed-code tile reads clearly at 1x1.
+
+### Plan: themed icon set and picker (2026-10-22)
+
+**Status (2026-10-22): twelve icons registered (P1 done); grouping and a larger picker tile (P2, P3) not done.** The four colour variants stay. `neon.png` and `glow.png` (the two neon-style pieces) are kept in `assets/widget-icons/` but not listed in `TILE_ICONS`; a second sheet added `wash`, `glow`, `doodle`, `vine` and `arcade`.
+
+~~Status line from the first pass:~~ assets added, nothing wired up. A picker already exists (the "Icon" panel in `WidgetSetup.js`, a wrapping row of `IconChoice` buttons fed by `TILE_ICONS`). This plan covers growing it from four icons to nine.
+
+**Assets.** Five themed icons were cut from `Five Themed QR Code Icons.png` and saved as 384x384 transparent PNGs in `assets/widget-icons/`: `neon`, `leaf`, `pixel`, `wood`, `tech`. 384px is 4x the 96dp draw size in `QrTile`, enough for xxxhdpi. Each is centred on a square canvas with about 8px of margin, so `leaf` and `pixel` (taller than wide) have transparent sides. Source art was 390-460px, so nothing was upscaled.
+
+**Catalogue.** Add five entries to `src/widgets/tileIcons.js` (id, label, `require`). The saved binding stores only `iconId`, so existing tiles are unaffected. Decide first whether the four hue-rotated app icons stay: nine in a flat list is a lot, and they are the plainest.
+
+| Step | Work |
+|---|---|
+| P1 | Register the five icons in `TILE_ICONS`; keep `DEFAULT_ICON_ID` as is |
+| P2 | Group the catalogue: add a `group` field ("App colours", "Themed") and render one labelled row per group in `WidgetSetup`, so nine icons do not read as one wall |
+| P3 | Enlarge `IconChoice` (64px image is small for detailed art such as `leaf` and `pixel`; 3 per row at about 88px) and keep the selected state and `accessibilityRole="radio"` |
+| P4 | Update the tile icon tests (`src/widgets/__tests__`) for the new ids and the unknown-id fallback |
+| P5 | Update the docs: `FEATURES.md` section 6 ("four copies of the app icon") and the Icons row above |
+
+**Open questions**
+- Keep, trim or drop the four colour variants.
+- Colour contrast: `neon` and `tech` are dark and glow-edged, so check them on light wallpapers; the glow fades to transparent and may look washed out.
+- Is anything in the themed set meant to be a seasonal or "unlockable" extra? If not, the flat grouping above is enough.
+
+**Device checks to add:** each new icon renders in the in-app preview and on the home screen, and stays legible at about 60px; transparent sides on `leaf` and `pixel` look centred; no visible halo or fringe on a light and a dark wallpaper.

@@ -140,7 +140,7 @@ it opens the full-screen view via `xegqr://show/<id>`.
 |---|---|
 | Size | 1×1 only, one entry in the widget picker, not resizable |
 | Code | Picked when the tile is added; long-press the tile to pick another |
-| Icon | One of four copies of the app icon in different colours (cyan, green, ember, magenta); the catalogue is `src/widgets/tileIcons.js`, built to take more |
+| Icon | One of twelve: four copies of the app icon in different colours (cyan, green, ember, magenta) and eight themed pictures (leaf, pixel, wood, tech, wash, doodle, vine, arcade); the catalogue is `src/widgets/tileIcons.js`, built to take more |
 | Text | None. The tile shows only its icon, so it gives nothing away about the code. The code's name is kept as the tile's spoken (TalkBack) description |
 | Preview | Live, drawn by the widget library's native renderer, so it matches the home screen |
 | Rename | The tile's spoken description follows the code's new name |

@@ -1,8 +1,8 @@
 import { DEFAULT_ICON_ID, TILE_ICONS, getTileIcon } from "../tileIcons";
 
 describe("TILE_ICONS", () => {
-  it("offers four icons, each with a unique id, a label and a bundled image", () => {
-    expect(TILE_ICONS).toHaveLength(4);
+  it("offers twelve icons, each with a unique id, a label and a bundled image", () => {
+    expect(TILE_ICONS).toHaveLength(12);
     expect(new Set(TILE_ICONS.map((icon) => icon.id)).size).toBe(TILE_ICONS.length);
     for (const icon of TILE_ICONS) {
       expect(icon.label).toBeTruthy();
