@@ -1,0 +1,193 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="color-scheme" content="light dark" />
+  <meta name="description" content="How XegQR handles your data: it stays on your device." />
+  <title>Privacy Policy - XegQR</title>
+  <!--
+    Served at /privacy on qr.xegster.com.au (PRIVACY_URL in src/utils/legalLinks.js, linked from
+    Settings > Legal and the Play Console listing). A plain static file: `expo export` copies
+    public/ into dist/, and Cloudflare serves /privacy from privacy.html. Keep it free of app
+    code so it loads even when the app bundle is mid-deploy. DRAFT: written from what the code
+    does; not legal advice.
+
+    If a change to the app alters any statement here (analytics, ads, an account, a server, a new
+    permission), update this page in the same change, bump the date, and keep the Play Data
+    safety form in line with it.
+
+    TO FILL IN before this goes live (search for "TO BE ADDED"):
+      - [SUPPORT EMAIL - TO BE ADDED]                   (sections 1 and 10)
+      - [LEGAL NAME / BUSINESS DETAILS - TO BE ADDED]   (section 1)
+    Use the same values as PoGoManager's pages. Keep the shared <style> block identical across
+    privacy.html, terms.html and support.html (and PoGoManager's copies).
+  -->
+  <style>
+    :root {
+      --bg: #f4f6fa;
+      --card: #ffffff;
+      --text: #1a1a1a;
+      --muted: #5b6573;
+      --border: #d9dee7;
+      --primary: #1f6feb;
+      --link: #1859c4;
+      --note: #eef4ff;
+      --todo-bg: #fff1a8;
+      --todo-text: #4a3b00;
+    }
+    @media (prefers-color-scheme: dark) {
+      :root {
+        --bg: #0f1b2d;
+        --card: #162338;
+        --text: #f1f4f9;
+        --muted: #9aa7ba;
+        --border: #2a3b55;
+        --link: #7db1ff;
+        --note: #1b2d49;
+        --todo-bg: #5c4a00;
+        --todo-text: #ffe9a0;
+      }
+    }
+    * { box-sizing: border-box; }
+    html { -webkit-text-size-adjust: 100%; }
+    body {
+      margin: 0;
+      background: var(--bg);
+      color: var(--text);
+      font-family: system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+      font-size: 16px;
+      line-height: 1.6;
+    }
+    .wrap { max-width: 720px; margin: 0 auto; padding: 24px 16px 40px; }
+    .brand {
+      display: inline-block;
+      margin: 0 0 16px;
+      font-size: 20px;
+      font-weight: 700;
+      letter-spacing: 1px;
+      color: var(--primary);
+      text-decoration: none;
+    }
+    main {
+      padding: 24px 20px;
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 16px;
+      overflow-wrap: break-word;
+    }
+    @media (min-width: 600px) { main { padding: 32px 36px; } }
+    h1 { margin: 0 0 4px; font-size: 26px; line-height: 1.25; }
+    h2 { margin: 28px 0 8px; font-size: 19px; line-height: 1.3; }
+    h3 { margin: 16px 0 4px; font-size: 16px; }
+    p { margin: 0 0 12px; }
+    ul, ol { margin: 0 0 12px; padding-left: 22px; }
+    li { margin-bottom: 6px; }
+    a { color: var(--link); }
+    .updated { margin: 0 0 20px; font-size: 14px; color: var(--muted); }
+    .summary {
+      margin: 0 0 8px;
+      padding: 14px 16px;
+      background: var(--note);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+    }
+    .summary h2 { margin-top: 0; font-size: 16px; }
+    .summary ul { margin-bottom: 0; }
+    details { margin: 0 0 8px; border: 1px solid var(--border); border-radius: 12px; }
+    summary { padding: 12px 14px; font-weight: 600; cursor: pointer; }
+    .answer { padding: 0 14px 2px; }
+    .todo {
+      padding: 0 4px;
+      background: var(--todo-bg);
+      color: var(--todo-text);
+      border-radius: 4px;
+      font-weight: 600;
+    }
+    footer { margin-top: 20px; font-size: 14px; text-align: center; color: var(--muted); }
+    footer a { display: inline-block; margin: 0 8px; padding: 4px 0; }
+    footer p { margin: 0 0 4px; }
+  </style>
+</head>
+<body>
+  <div class="wrap">
+    <a class="brand" href="/">XegQR</a>
+    <main>
+      <h1>Privacy Policy</h1>
+      <p class="updated">Last updated 20 October 2026</p>
+
+      <div class="summary">
+        <h2>The short version</h2>
+        <ul>
+          <li>XegQR has no accounts and no servers of its own. The codes you make, the images you pick and your settings stay on your device.</li>
+          <li>Nothing you type into a code (Wi-Fi passwords, contact details, authenticator secrets, payment details) is sent to us or anyone else.</li>
+          <li>There are no ads, no analytics and no tracking in the app.</li>
+          <li>Uninstall the app, or clear this site's data in your browser, and everything is gone.</li>
+        </ul>
+      </div>
+
+      <h2 id="who">1. Who we are</h2>
+      <p>XegQR (&ldquo;the app&rdquo;, &ldquo;we&rdquo;, &ldquo;us&rdquo;) is made by Xegster. It creates and scans QR codes. It runs on Android and in a web browser at <a href="/">qr.xegster.com.au</a>.</p>
+      <p>Operator: <span class="todo">[LEGAL NAME / BUSINESS DETAILS - TO BE ADDED]</span><br />
+      Privacy contact: <span class="todo">[SUPPORT EMAIL - TO BE ADDED]</span></p>
+
+      <h2 id="collect">2. What we collect</h2>
+      <p><strong>Nothing.</strong> We don't run a server that receives your data, so we don't collect, receive or hold any of it. The rest of this page describes what the app does on your own device, so you can see why that is true.</p>
+
+      <h2 id="device">3. What stays on your device</h2>
+      <ul>
+        <li><strong>Saved codes.</strong> Everything you enter to make a code, which can include Wi-Fi network names and passwords, contact cards, authenticator (one-time-password) secrets, bank-transfer and crypto details, and links. On Android this is kept in the app's private storage (SQLite); on the web, in your browser's storage (IndexedDB).</li>
+        <li><strong>Settings.</strong> Your theme, default error-correction level and similar choices.</li>
+        <li><strong>Logo images.</strong> When you pick an image to put in a code, the app reads that one file. If <strong>Save images for reuse</strong> is on in Settings, it keeps a copy in the app's storage so you can use it again. You can turn this off and remove saved images at any time.</li>
+        <li><strong>Home-screen tile (Android).</strong> A tile remembers which saved code it opens and which icon you chose. That is stored on your device only.</li>
+      </ul>
+      <p>The app's own storage is private to it. It is not protected by a separate password, so anyone who can unlock your phone or use your browser profile can open the app and see what you saved.</p>
+
+      <h2 id="permissions">4. Camera, photos and other device features</h2>
+      <ul>
+        <li><strong>Camera.</strong> Used only on the Scan screen, to read a code. Pictures from the camera are processed on your device to read the code. They are not saved, recorded or sent anywhere. On the web, your browser asks you for permission first, and some browsers (such as Firefox and Safari at the time of writing) can't scan at all.</li>
+        <li><strong>Photos and files.</strong> Choosing a logo opens your device's picker and the app reads only the image you choose. On Android, <strong>saving a code to your photos</strong> asks for photo-library permission at that moment, and only to add the picture you are saving. On the web, saving downloads a file through your browser.</li>
+        <li><strong>Sharing and copying.</strong> Share, copy and save are actions you start. A shared code goes wherever you send it, through your device's share sheet or clipboard. We don't see it.</li>
+        <li><strong>Screen brightness and keeping the screen awake.</strong> While a code is shown full screen, the app can raise its own window's brightness and keep the screen on, then puts both back. This needs no permission and collects nothing.</li>
+      </ul>
+
+      <h2 id="network">5. Network and who else is involved</h2>
+      <p>The app doesn't send your codes, images or settings anywhere. The only connections involved are these:</p>
+      <ul>
+        <li><strong>Cloudflare</strong> hosts this website and the web app. Like any website host, it sees the usual request details (your IP address, browser type, the page requested and the time) in its logs when you load the site. We don't use these to profile anyone.</li>
+        <li><strong>Expo</strong> delivers over-the-air updates to the Android app. The update check carries technical details such as the app version, the platform and your IP address, and nothing you have created.</li>
+        <li><strong>Google Play</strong> delivers the Android app. Google handles the information it collects about installs and crashes under its own privacy policy.</li>
+        <li><strong>Scanned links.</strong> If you scan a code that holds a link, the app shows you the contents first. It opens the link only when you tap to open it, and the site or app it opens belongs to someone else and has its own privacy policy.</li>
+      </ul>
+      <p>These providers process data to run their own services, under their own terms and privacy policies. Their servers may be outside your country.</p>
+      <p>The app doesn't use advertising, analytics or crash-reporting tools, and sets no tracking cookies. On the web it uses your browser's storage (not tracking cookies) to keep your saved codes and settings. If that ever changes, we will update this page first.</p>
+
+      <h2 id="secrets">6. Codes can contain secrets</h2>
+      <p>A code is just your information drawn as a picture. Anyone who scans it, or sees a screenshot or printout of it, can read what's inside. That matters most for Wi-Fi passwords, authenticator secrets and payment details. Share those codes only with people you trust.</p>
+
+      <h2 id="choices">7. Your choices and deleting your data</h2>
+      <ul>
+        <li><strong>Delete a code.</strong> Open <strong>Saved</strong> and remove it.</li>
+        <li><strong>Remove saved images.</strong> Settings &rarr; Image cache &rarr; Remove all saved images, or turn off Save images for reuse.</li>
+        <li><strong>Delete everything.</strong> Uninstall the app on Android, or clear this site's data in your browser's settings. Because we hold no copy, there is nothing for us to delete and no account to close.</li>
+        <li><strong>Revoke permissions.</strong> Camera and photo access can be switched off at any time in your device or browser settings.</li>
+      </ul>
+      <p>Depending on where you live, you may have rights to access, correct or delete your personal information, or to complain to a privacy regulator. We hold none of yours, but you can contact us (section 10) with any question.</p>
+
+      <h2 id="children">8. Children</h2>
+      <p>XegQR isn't directed at children under 13. It asks for no personal information and has no accounts, so it collects nothing about anyone, including children.</p>
+
+      <h2 id="changes">9. Changes to this policy</h2>
+      <p>If we change what the app does with data, we will update this page and the date at the top before the change reaches you.</p>
+
+      <h2 id="contact">10. Contact</h2>
+      <p>Questions about privacy: <span class="todo">[SUPPORT EMAIL - TO BE ADDED]</span>. For help using the app, see the <a href="/support">Support</a> page.</p>
+    </main>
+
+    <footer>
+      <p><a href="/privacy">Privacy</a><a href="/terms">Terms</a><a href="/support">Support</a><a href="/">Open the app</a></p>
+      <p>&copy; Xegster</p>
+    </footer>
+  </div>
+</body>
+</html>

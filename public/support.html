@@ -1,0 +1,187 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="color-scheme" content="light dark" />
+  <meta name="description" content="Help with XegQR: scanning, saving, your data and how to reach us." />
+  <title>Support - XegQR</title>
+  <!--
+    Served at /support on qr.xegster.com.au (SUPPORT_URL in src/utils/legalLinks.js, linked from
+    Settings > Legal and the Play Console listing). A plain static file; see privacy.html for why.
+    DRAFT: not legal advice.
+
+    TO FILL IN before this goes live (search for "TO BE ADDED"):
+      - [SUPPORT EMAIL - TO BE ADDED]   (Contact us)
+    Use the same address as the Play listing and the other two pages. Keep the shared <style>
+    block identical across privacy.html, terms.html and support.html.
+  -->
+  <style>
+    :root {
+      --bg: #f4f6fa;
+      --card: #ffffff;
+      --text: #1a1a1a;
+      --muted: #5b6573;
+      --border: #d9dee7;
+      --primary: #1f6feb;
+      --link: #1859c4;
+      --note: #eef4ff;
+      --todo-bg: #fff1a8;
+      --todo-text: #4a3b00;
+    }
+    @media (prefers-color-scheme: dark) {
+      :root {
+        --bg: #0f1b2d;
+        --card: #162338;
+        --text: #f1f4f9;
+        --muted: #9aa7ba;
+        --border: #2a3b55;
+        --link: #7db1ff;
+        --note: #1b2d49;
+        --todo-bg: #5c4a00;
+        --todo-text: #ffe9a0;
+      }
+    }
+    * { box-sizing: border-box; }
+    html { -webkit-text-size-adjust: 100%; }
+    body {
+      margin: 0;
+      background: var(--bg);
+      color: var(--text);
+      font-family: system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+      font-size: 16px;
+      line-height: 1.6;
+    }
+    .wrap { max-width: 720px; margin: 0 auto; padding: 24px 16px 40px; }
+    .brand {
+      display: inline-block;
+      margin: 0 0 16px;
+      font-size: 20px;
+      font-weight: 700;
+      letter-spacing: 1px;
+      color: var(--primary);
+      text-decoration: none;
+    }
+    main {
+      padding: 24px 20px;
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 16px;
+      overflow-wrap: break-word;
+    }
+    @media (min-width: 600px) { main { padding: 32px 36px; } }
+    h1 { margin: 0 0 4px; font-size: 26px; line-height: 1.25; }
+    h2 { margin: 28px 0 8px; font-size: 19px; line-height: 1.3; }
+    h3 { margin: 16px 0 4px; font-size: 16px; }
+    p { margin: 0 0 12px; }
+    ul, ol { margin: 0 0 12px; padding-left: 22px; }
+    li { margin-bottom: 6px; }
+    a { color: var(--link); }
+    .updated { margin: 0 0 20px; font-size: 14px; color: var(--muted); }
+    .summary {
+      margin: 0 0 8px;
+      padding: 14px 16px;
+      background: var(--note);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+    }
+    .summary h2 { margin-top: 0; font-size: 16px; }
+    .summary ul { margin-bottom: 0; }
+    details { margin: 0 0 8px; border: 1px solid var(--border); border-radius: 12px; }
+    summary { padding: 12px 14px; font-weight: 600; cursor: pointer; }
+    .answer { padding: 0 14px 2px; }
+    .todo {
+      padding: 0 4px;
+      background: var(--todo-bg);
+      color: var(--todo-text);
+      border-radius: 4px;
+      font-weight: 600;
+    }
+    footer { margin-top: 20px; font-size: 14px; text-align: center; color: var(--muted); }
+    footer a { display: inline-block; margin: 0 8px; padding: 4px 0; }
+    footer p { margin: 0 0 4px; }
+  </style>
+</head>
+<body>
+  <div class="wrap">
+    <a class="brand" href="/">XegQR</a>
+    <main>
+      <h1>Support</h1>
+      <p class="updated">Help with scanning, saving and your data</p>
+
+      <div class="summary">
+        <h2>Contact us</h2>
+        <p>Email <span class="todo">[SUPPORT EMAIL - TO BE ADDED]</span></p>
+        <p>Please tell us what happened, whether you use Android or a web browser (and which one), and the app version (shown at the bottom of Settings). <strong>Don't send us the contents of a code that holds a password or other secret.</strong></p>
+      </div>
+
+      <h2 id="problems">Common problems</h2>
+
+      <details>
+        <summary>Scanning isn't available in my browser</summary>
+        <div class="answer">
+          <p>Reading codes in a browser needs a feature called BarcodeDetector, which Chrome and Edge have but Firefox and Safari don't yet. Creating, styling and saving codes works in every browser. To scan on any device, use the Android app.</p>
+        </div>
+      </details>
+
+      <details>
+        <summary>The camera doesn't start</summary>
+        <div class="answer">
+          <ul>
+            <li>Allow camera access when asked. If you said no, switch it back on in your device's app settings, or in your browser's site settings for qr.xegster.com.au.</li>
+            <li>Close any other app that is using the camera, then reopen the Scan screen.</li>
+            <li>On the web, the page must be opened over https, and some in-app browsers (inside social apps) block the camera. Open the link in your normal browser.</li>
+          </ul>
+        </div>
+      </details>
+
+      <details>
+        <summary>A code I made won't scan</summary>
+        <div class="answer">
+          <ul>
+            <li>Keep strong contrast: dark code on a light background. Very pale or very similar colours are hard to read.</li>
+            <li>Raise the error-correction level (Settings &rarr; Defaults, or in the style options) if you added a logo, then keep the logo small.</li>
+            <li>Shorter content makes a simpler code that scans from further away. Long text produces a dense code.</li>
+            <li>Print it large enough, and test it with a scanner before you share it.</li>
+          </ul>
+        </div>
+      </details>
+
+      <details>
+        <summary>Saving to my photos fails</summary>
+        <div class="answer">
+          <p>On Android, XegQR asks for photo-library permission the first time you save. If you declined, allow it under your device's app settings for XegQR, then try again. On the web, saving downloads a file; check your browser's downloads folder.</p>
+        </div>
+      </details>
+
+      <details>
+        <summary>My saved codes are gone, or aren't on my other device</summary>
+        <div class="answer">
+          <p>XegQR has no account and no cloud, so saved codes live only on the device (or browser) where you made them. They are removed if you uninstall the app or clear the site's data, and they don't move between devices. Keep a screenshot or an exported image of anything important.</p>
+        </div>
+      </details>
+
+      <details>
+        <summary>The home-screen tile doesn't appear (Android)</summary>
+        <div class="answer">
+          <p>Long-press an empty spot on your home screen, choose Widgets, then find XegQR. To change a tile's icon or the code it opens, long-press it and tap its edit option (Android 12 and later). Not every launcher lets an app add a tile itself.</p>
+        </div>
+      </details>
+
+      <h2 id="delete-data">Delete your data</h2>
+      <p>XegQR has no accounts, and we hold none of your data, so there is nothing for us to delete and no account to close. Everything is on your device, and you can remove it yourself:</p>
+      <ul>
+        <li><strong>One code:</strong> open <strong>Saved</strong> and delete it.</li>
+        <li><strong>Saved logo images:</strong> Settings &rarr; Image cache &rarr; Remove all saved images.</li>
+        <li><strong>Everything:</strong> uninstall the app on Android, or clear the site data for qr.xegster.com.au in your browser's settings.</li>
+      </ul>
+      <p>More detail is in the <a href="/privacy">Privacy Policy</a>.</p>
+    </main>
+
+    <footer>
+      <p><a href="/privacy">Privacy</a><a href="/terms">Terms</a><a href="/support">Support</a><a href="/">Open the app</a></p>
+      <p>&copy; Xegster</p>
+    </footer>
+  </div>
+</body>
+</html>

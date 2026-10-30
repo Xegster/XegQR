@@ -1,0 +1,186 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="color-scheme" content="light dark" />
+  <meta name="description" content="The terms for using XegQR." />
+  <title>Terms of Use - XegQR</title>
+  <!--
+    Served at /terms on qr.xegster.com.au (TERMS_URL in src/utils/legalLinks.js, linked from
+    Settings > Legal). A plain static file: `expo export` copies public/ into dist/, and
+    Cloudflare serves /terms from terms.html. Keep it free of app code so it loads even when the
+    app bundle is mid-deploy. DRAFT: written from what the app does; not legal advice.
+
+    TO FILL IN before this goes live (search for "TO BE ADDED"):
+      - [LEGAL NAME / BUSINESS DETAILS - TO BE ADDED]   (section 1)
+      - [SUPPORT EMAIL - TO BE ADDED]                   (section 13)
+      - [GOVERNING LAW / JURISDICTION - TO BE ADDED]    (section 12)
+    Use the same values as PoGoManager's pages. Keep the shared <style> block identical across
+    privacy.html, terms.html and support.html (and PoGoManager's copies).
+  -->
+  <style>
+    :root {
+      --bg: #f4f6fa;
+      --card: #ffffff;
+      --text: #1a1a1a;
+      --muted: #5b6573;
+      --border: #d9dee7;
+      --primary: #1f6feb;
+      --link: #1859c4;
+      --note: #eef4ff;
+      --todo-bg: #fff1a8;
+      --todo-text: #4a3b00;
+    }
+    @media (prefers-color-scheme: dark) {
+      :root {
+        --bg: #0f1b2d;
+        --card: #162338;
+        --text: #f1f4f9;
+        --muted: #9aa7ba;
+        --border: #2a3b55;
+        --link: #7db1ff;
+        --note: #1b2d49;
+        --todo-bg: #5c4a00;
+        --todo-text: #ffe9a0;
+      }
+    }
+    * { box-sizing: border-box; }
+    html { -webkit-text-size-adjust: 100%; }
+    body {
+      margin: 0;
+      background: var(--bg);
+      color: var(--text);
+      font-family: system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+      font-size: 16px;
+      line-height: 1.6;
+    }
+    .wrap { max-width: 720px; margin: 0 auto; padding: 24px 16px 40px; }
+    .brand {
+      display: inline-block;
+      margin: 0 0 16px;
+      font-size: 20px;
+      font-weight: 700;
+      letter-spacing: 1px;
+      color: var(--primary);
+      text-decoration: none;
+    }
+    main {
+      padding: 24px 20px;
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 16px;
+      overflow-wrap: break-word;
+    }
+    @media (min-width: 600px) { main { padding: 32px 36px; } }
+    h1 { margin: 0 0 4px; font-size: 26px; line-height: 1.25; }
+    h2 { margin: 28px 0 8px; font-size: 19px; line-height: 1.3; }
+    h3 { margin: 16px 0 4px; font-size: 16px; }
+    p { margin: 0 0 12px; }
+    ul, ol { margin: 0 0 12px; padding-left: 22px; }
+    li { margin-bottom: 6px; }
+    a { color: var(--link); }
+    .updated { margin: 0 0 20px; font-size: 14px; color: var(--muted); }
+    .summary {
+      margin: 0 0 8px;
+      padding: 14px 16px;
+      background: var(--note);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+    }
+    .summary h2 { margin-top: 0; font-size: 16px; }
+    .summary ul { margin-bottom: 0; }
+    details { margin: 0 0 8px; border: 1px solid var(--border); border-radius: 12px; }
+    summary { padding: 12px 14px; font-weight: 600; cursor: pointer; }
+    .answer { padding: 0 14px 2px; }
+    .todo {
+      padding: 0 4px;
+      background: var(--todo-bg);
+      color: var(--todo-text);
+      border-radius: 4px;
+      font-weight: 600;
+    }
+    footer { margin-top: 20px; font-size: 14px; text-align: center; color: var(--muted); }
+    footer a { display: inline-block; margin: 0 8px; padding: 4px 0; }
+    footer p { margin: 0 0 4px; }
+  </style>
+</head>
+<body>
+  <div class="wrap">
+    <a class="brand" href="/">XegQR</a>
+    <main>
+      <h1>Terms of Use</h1>
+      <p class="updated">Last updated 20 October 2026</p>
+
+      <div class="summary">
+        <h2>The short version</h2>
+        <ul>
+          <li>XegQR is a free tool that makes and reads QR codes. It builds each code exactly from what you type.</li>
+          <li>You are responsible for what you put in a code and for what you scan. Check payment and login details before you share or use them.</li>
+          <li>XegQR is not a wallet, bank, payment service or password manager.</li>
+          <li>The app is provided as is, and it keeps your data on your device, so keep your own copy of anything important.</li>
+        </ul>
+      </div>
+
+      <h2 id="agreement">1. About these terms</h2>
+      <p>These terms cover your use of XegQR, made by Xegster (&ldquo;we&rdquo;, &ldquo;us&rdquo;), on Android and at qr.xegster.com.au. By using the app you agree to them and to our <a href="/privacy">Privacy Policy</a>. If you don't agree, please don't use the app.</p>
+      <p>Operator: <span class="todo">[LEGAL NAME / BUSINESS DETAILS - TO BE ADDED]</span></p>
+
+      <h2 id="who">2. Who can use it</h2>
+      <p>You must be at least 13 years old (or older, if your country sets a higher age for using online services without a parent's consent) and able to form a binding agreement.</p>
+
+      <h2 id="what">3. What XegQR is</h2>
+      <p>XegQR creates QR codes from the details you enter (links, text, Wi-Fi, contacts, calendar events, payments and so on), lets you style, save, export and show them, and scans codes with your camera. It works on your device. There is no account, and we don't receive your codes.</p>
+      <p>The app is free, with no ads and no in-app purchases.</p>
+
+      <h2 id="responsibility">4. Your responsibility for codes</h2>
+      <ul>
+        <li><strong>Accuracy.</strong> A code is built exactly from what you enter, with no checking. A mistake, such as a wrong digit in an account number or a mistyped link, is carried into the code. Test every code with a scanner before you print it or share it.</li>
+        <li><strong>Content.</strong> You are responsible for what you put in a code and for how you use it. Don't use it for anything unlawful, deceptive or harmful, such as codes that lead to scams or malware or that infringe someone's rights.</li>
+        <li><strong>Secrets.</strong> Wi-Fi passwords, authenticator secrets and payment details in a code can be read by anyone who scans or photographs it. Share those only with people you trust.</li>
+        <li><strong>Scanning.</strong> A code can lead anywhere. Look at what a scanned code contains before you open a link, join a network, add a contact or send money. We aren't responsible for what scanned codes contain or for the sites and apps they open.</li>
+      </ul>
+
+      <h2 id="not-financial">5. Not a financial or security service</h2>
+      <p>XegQR can build codes in formats used for bank transfers (SEPA), crypto addresses, PayPal links and authenticator (one-time-password) setup. It only draws the details you give it as a code. It is not a wallet, bank, payment processor or password manager, it doesn't hold or move money, and it doesn't verify any payment details. Confirm every amount and recipient in your own banking, wallet or authenticator app before you pay or rely on a code.</p>
+
+      <h2 id="trademarks">6. Other people's names and marks</h2>
+      <p>XegQR uses the names of services such as Wi-Fi, WhatsApp, Telegram, Zoom, PayPal, FaceTime, Google Play, the App Store and various social networks only to describe the kind of code it can build. It is not affiliated with, sponsored by or endorsed by any of them, and their names and marks belong to their owners. QR Code is a registered trademark of DENSO WAVE INCORPORATED.</p>
+
+      <h2 id="your-content">7. Your data</h2>
+      <p>You own what you enter and the codes you make. We don't receive them, so we can't keep, back up or recover them. Saved codes live on your device and are removed when you uninstall the app or clear the site's data in your browser, so export or screenshot anything you can't afford to lose. How the app treats data is described in the <a href="/privacy">Privacy Policy</a>.</p>
+      <p>Images you use as logos must be yours to use, or used with permission.</p>
+
+      <h2 id="use">8. Acceptable use</h2>
+      <p>Please don't:</p>
+      <ul>
+        <li>use the app for anything unlawful, or to harm, harass or defraud others;</li>
+        <li>use it to disrupt, overload or probe the website or its hosting;</li>
+        <li>copy, modify or reverse engineer the app except where the law allows it.</li>
+      </ul>
+
+      <h2 id="ours">9. Our property</h2>
+      <p>The app, its design and its code belong to Xegster. We give you a personal, non-exclusive, non-transferable licence to use it for your own purposes under these terms. The codes you make are yours.</p>
+
+      <h2 id="availability">10. Availability and changes</h2>
+      <p>We may update, change or stop the app or any feature at any time, including by delivering updates over the air. We try to keep it running, but we can't promise it will always be available, error-free or compatible with every scanner, browser or phone. Some browsers can't scan codes at all.</p>
+
+      <h2 id="warranty">11. No warranty and limit of liability</h2>
+      <p>The app is provided &ldquo;as is&rdquo; and &ldquo;as available&rdquo;. To the extent the law allows, we give no warranties about it, including that it is fit for a particular purpose or that any code it makes will scan or be correct.</p>
+      <p>To the extent the law allows, we aren't liable for indirect or consequential loss, loss of data, or loss arising from a code you made, shared or scanned, including a payment sent to the wrong place. Our total liability for any claim relating to the app is limited to the amount you paid us for it, which is nothing. Nothing in these terms limits any right you have under consumer law that can't be excluded, or liability that can't be limited by law.</p>
+
+      <h2 id="ending">12. Ending your use, and governing law</h2>
+      <p>You can stop using the app at any time by uninstalling it. We may suspend or end access to the website or app if you break these terms or if we stop providing it. Sections that by their nature should survive, such as sections 4, 5, 6, 9 and 11, will continue to apply.</p>
+      <p>These terms are governed by the laws of <span class="todo">[GOVERNING LAW / JURISDICTION - TO BE ADDED]</span>.</p>
+
+      <h2 id="contact">13. Changes and contact</h2>
+      <p>We may update these terms. The date at the top shows the latest version, and if you keep using the app after a change, you accept the updated terms. Questions: <span class="todo">[SUPPORT EMAIL - TO BE ADDED]</span>, or see the <a href="/support">Support</a> page.</p>
+    </main>
+
+    <footer>
+      <p><a href="/privacy">Privacy</a><a href="/terms">Terms</a><a href="/support">Support</a><a href="/">Open the app</a></p>
+      <p>&copy; Xegster</p>
+    </footer>
+  </div>
+</body>
+</html>

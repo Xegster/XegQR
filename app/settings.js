@@ -17,6 +17,7 @@ import { pinWidget } from "../src/services/widgetSync";
 import { WIDGET_NAME } from "../src/widgets/widgetNames";
 import { alert, confirm } from "../src/utils/crossPlatformAlert";
 import { isAndroid, isNativeApp } from "../src/utils/platform";
+import { PRIVACY_URL, TERMS_URL, SUPPORT_URL, openLegalUrl } from "../src/utils/legalLinks";
 
 const MB = 1024 * 1024;
 const appVersion = Constants.expoConfig?.extra?.appVersion ?? Constants.expoConfig?.version;
@@ -199,6 +200,35 @@ export default function SettingsScreen() {
             Saved codes and images live in this app's local storage. Uninstalling the app, or
             clearing the site data in your browser, removes them for good.
           </Text>
+        </Panel>
+
+        <Panel title="Legal" icon={<Icon name="shield" size={18} color={tokens.PrimaryColor} />}>
+          <View style={styles.widgetButtons}>
+            <AppButton
+              label="Privacy Policy"
+              variant="outline"
+              size="sm"
+              testID="legal-privacy"
+              onPress={() => openLegalUrl(PRIVACY_URL)}
+              style={styles.widgetButton}
+            />
+            <AppButton
+              label="Terms of Use"
+              variant="outline"
+              size="sm"
+              testID="legal-terms"
+              onPress={() => openLegalUrl(TERMS_URL)}
+              style={styles.widgetButton}
+            />
+            <AppButton
+              label="Support"
+              variant="outline"
+              size="sm"
+              testID="legal-support"
+              onPress={() => openLegalUrl(SUPPORT_URL)}
+              style={styles.widgetButton}
+            />
+          </View>
         </Panel>
 
         <Panel title="Version" icon={<Icon name="settings" size={18} color={tokens.PrimaryColor} />}>
